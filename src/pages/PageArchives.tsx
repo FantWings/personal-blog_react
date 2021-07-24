@@ -66,7 +66,7 @@ const LeftViewComponent = styled.div`
         display: block;
       }
       #lastupdate {
-        font-size: 0.5em;
+        font-size: .85em;
         color: ${ThemeColor.gray};
       }
       #visited {

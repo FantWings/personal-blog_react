@@ -12,7 +12,7 @@ export default function TagGroup(props: { tags: Array<string>; style?: object })
 
   return (
     <ul className="tags disableDefaultListStyle">
-      {tags.map((tags) => {
+      { tags && tags.map((tags) => {
         return (
           <Tags
             key={tags}
