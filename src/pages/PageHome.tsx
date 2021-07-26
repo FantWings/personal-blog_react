@@ -13,7 +13,7 @@ import TagGroup from '../components/tagGroup'
 
 export default function PageHome() {
   return (
-    <PageContainer>
+    <>
       <ArchivesPreviewComponent />
       <div style={{ flex: '0.3' }}>
         <Widges title="博客管理">
@@ -29,7 +29,7 @@ export default function PageHome() {
           <FilterByTagsComponent />
         </Widges>
       </div>
-    </PageContainer>
+    </>
   )
 }
 
@@ -105,15 +105,6 @@ function FilterByTagsComponent() {
   }, [])
   return <TagGroup tags={data} style={{ marginBottom: '1em' }} />
 }
-
-const PageContainer = styled.div`
-  display: flex;
-  padding: 25px;
-  height: calc(100% - 64px);
-  box-sizing: border-box;
-  max-width: 1200px;
-  margin: 0 auto;
-`
 
 const ArchivesPreview = styled.div`
   display: flex;

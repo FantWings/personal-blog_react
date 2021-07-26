@@ -166,6 +166,7 @@ function Tools({ userTools, adminTools }: { userTools: any; adminTools?: any }) 
 const LeftView = styled.div`
   flex: 0.7;
   margin-right: 10px;
+<<<<<<< HEAD
 `
 
 const BlogDetail = styled.div`
@@ -201,6 +202,26 @@ const BlogDetail = styled.div`
       :hover {
         color: ${ThemeColor.red};
         cursor: pointer;
+=======
+  .archive {
+    background-color: #fff;
+    margin-bottom: 1em;
+    #titleBlock {
+      display: flex;
+      justify-content: space-between;
+      padding: 1.5em;
+      align-items: center;
+      #title {
+        font-size: 2em;
+        display: block;
+      }
+      #lastupdate {
+        font-size: .85em;
+        color: ${ThemeColor.gray};
+      }
+      #visited {
+        color: ${ThemeColor.gray};
+>>>>>>> d73c26170d5ae4fd796dcf0ca7697c7b150c111d
       }
     }
   }
