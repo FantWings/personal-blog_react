@@ -1,15 +1,13 @@
 import styled from 'styled-components'
 
 // 博客右侧组件外壳函数
-export default function Widges(props: { title: string; children: object }) {
-  const { title } = props
-  console.log(props)
+export default function Widges({ title, children }: { title: string; children: object }) {
   return (
     <PageWidgesContainer>
       <WidgesTitle>
         <span>{title}</span>
       </WidgesTitle>
-      {props.children}
+      {children}
     </PageWidgesContainer>
   )
 }

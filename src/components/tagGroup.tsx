@@ -12,19 +12,20 @@ export default function TagGroup(props: { tags: Array<string>; style?: object })
 
   return (
     <ul className="tags disableDefaultListStyle">
-      {tags.map((tags) => {
-        return (
-          <Tags
-            key={tags}
-            onClick={() => {
-              history.push(`?filter_by=${tags}`)
-            }}
-            style={style}
-          >
-            {tags}
-          </Tags>
-        )
-      })}
+      {tags &&
+        tags.map((tags) => {
+          return (
+            <Tags
+              key={tags}
+              onClick={() => {
+                history.push(`?filter_by=${tags}`)
+              }}
+              style={style}
+            >
+              {tags}
+            </Tags>
+          )
+        })}
     </ul>
   )
 }

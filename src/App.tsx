@@ -4,8 +4,9 @@ import { NavLink } from 'react-router-dom'
 import styled from 'styled-components'
 
 // 导入页面
-import PageArchives from './pages/PageArchives'
 import PageHome from './pages/PageHome'
+import PageArchives from './pages/PageArchives'
+import PageEditer from './pages/PageEditor'
 
 function App() {
   return (
@@ -51,11 +52,14 @@ function App() {
           </div>
         </div>
       </NavBar>
-      <Switch>
-        <Route path="/" component={PageHome} exact></Route>
-        <Route path="/archives/:archId" component={PageArchives} exact></Route>
-        <Redirect to="/" />
-      </Switch>
+      <PageContainer>
+        <Switch>
+          <Route path="/" component={PageHome} exact></Route>
+          <Route path="/archives/:archId" component={PageArchives} exact></Route>
+          <Route path="/edit/:archId" component={PageEditer} exact></Route>
+          <Redirect to="/" />
+        </Switch>
+      </PageContainer>
       <Footer>
         <span>Copyright © 2019 粤ICP备20059526号</span>
         <span>Build 0.1a - 00837d7ae1ce50629e91d81f2849c98b. </span>
@@ -111,6 +115,15 @@ const NavBar = styled.div`
       }
     }
   }
+`
+
+const PageContainer = styled.div`
+  display: flex;
+  padding: 25px;
+  height: calc(100% - 64px);
+  box-sizing: border-box;
+  max-width: 1400px;
+  margin: 0 auto;
 `
 
 const Footer = styled.div`
