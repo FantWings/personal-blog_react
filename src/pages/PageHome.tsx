@@ -13,10 +13,10 @@ import TagGroup from '../components/tagGroup'
 
 export default function PageHome() {
   return (
-    <>
+    <PageHomeContainer>
       <ArchivesPreviewComponent />
-      <div style={{ flex: '0.3' }}>
-        <Widges title="博客管理">
+      <div style={{ minWidth: '300px' }}>
+        {/* <Widges title="博客管理">
           <BottomGroup>
             <IconButton text="按钮" />
             <IconButton text="按钮" />
@@ -24,12 +24,12 @@ export default function PageHome() {
             <IconButton text="按钮" />
             <IconButton text="按钮" />
           </BottomGroup>
-        </Widges>
+        </Widges> */}
         <Widges title="标签筛选">
           <FilterByTagsComponent />
         </Widges>
       </div>
-    </>
+    </PageHomeContainer>
   )
 }
 
@@ -62,7 +62,7 @@ function ArchivesPreviewComponent() {
   }, [history.location.search])
 
   return (
-    <div style={{ flex: '0.7' }}>
+    <div>
       {!loading &&
         data.map((arch) => {
           return (
@@ -113,8 +113,10 @@ const ArchivesPreview = styled.div`
   padding: 1rem;
   border-radius: 0.25rem;
   margin-bottom: 10px;
-  margin-right: 10px;
   transition: 0.3s;
+  @media all and (min-width: 769px) {
+    margin-right: 10px;
+  }
   :hover {
     box-shadow: 0px 0px 20px -5px rgb(158 158 158 / 22%);
   }
@@ -128,13 +130,19 @@ const ArchivesPreview = styled.div`
       overflow: hidden;
       span {
         display: block;
-        width: 200px;
+
         height: 100%;
         min-height: 128px;
         background-size: cover;
         background-repeat: no-repeat;
         background-position: 50% 50%;
         background-color: rgba(120, 120, 120, 0.1);
+        @media all and (max-width: 768px) {
+          width: 120px;
+        }
+        @media all and (min-width: 769px) {
+          width: 200px;
+        }
       }
     }
     .content {
@@ -158,6 +166,12 @@ const ArchivesPreview = styled.div`
       .text {
         font-size: 0.85rem;
         color: ${ThemeColor.gray};
+        @media all and (max-width: 768px) {
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 3;
+          overflow: hidden;
+        }
       }
     }
   }
@@ -169,6 +183,11 @@ const ArchivesPreview = styled.div`
     color: ${ThemeColor.gray};
     align-items: flex-end;
     justify-content: space-between;
+    @media all and (max-width: 768px) {
+      flex-direction: column;
+      align-items: end;
+      height: 48px;
+    }
     .info {
       li {
         margin: 0 0.5em;
@@ -180,4 +199,12 @@ const ArchivesPreview = styled.div`
 const BottomGroup = styled.div`
   display: flex;
   flex-wrap: wrap;
+`
+
+const PageHomeContainer = styled.div`
+  display: flex;
+  @media all and (max-width: 768px) {
+    flex-wrap: wrap;
+    flex-direction: column-reverse;
+  }
 `

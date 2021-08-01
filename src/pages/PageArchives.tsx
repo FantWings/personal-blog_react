@@ -3,6 +3,9 @@ import { useHistory, useParams } from 'react-router'
 import styled from 'styled-components'
 import Markdown from 'react-markdown'
 import copyLink from 'copy-to-clipboard'
+import gfm from 'remark-gfm'
+import SyntaxHighlighter from 'react-syntax-highlighter'
+import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs'
 
 import { ThemeColor } from '../utils/constent'
 // import Widges from '../components/widges'
@@ -14,10 +17,9 @@ import { blogDetailRespond } from '../utils/interfaces'
 import { BASEURL } from '../config'
 
 import { LoadingOutlined, QrcodeOutlined, LinkOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
-import { Tooltip, Divider, message } from 'antd'
+import { Tooltip, Divider, message, Popconfirm } from 'antd'
 
 export default function PageArchives() {
-  const history = useHistory()
   // 从URL获取文档ID
   const { archId } = useParams<{ archId: string }>()
   const [data, setData] = useState<blogDetailRespond>({
@@ -44,57 +46,29 @@ export default function PageArchives() {
 
   // 解构赋值文章数据
   const { title, text, date, view } = data
-
-  const user = [
-    {
-      tooltip: '获取二维码',
-      icon: <QrcodeOutlined />,
-    },
-    {
-      tooltip: '复制文章链接',
-      icon: <LinkOutlined />,
-      onclick: () => {
-        copyLink(window.location.href)
-        message.success({
-          content: '链接已复制到剪贴板',
-          key: 'copyed-on-board',
-        })
-      },
-    },
-  ]
-  const admin = [
-    {
-      tooltip: '编辑文章',
-      icon: <EditOutlined />,
-      onclick: () => history.push(`/edit/${archId}`),
-    },
-    {
-      tooltip: '删除文章',
-      icon: <DeleteOutlined />,
-    },
-  ]
-
   return (
     <>
       <LeftView>
         <BlogDetail>
-          <div id="titleBlock">
-            <div>
-              <span id="title">{title}</span>
-              <span id="lastupdate">{date}:30:47</span>
+          <div id="head">
+            <div id="titleBlock">
+              <span id="title" className="textHidden-singleLine-if-overflow">
+                {title}
+              </span>
+              <span id="lastupdate">{date}</span>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div id="visitBlock">
               <span id="visited">被浏览</span>
               <span>{view}</span>
             </div>
           </div>
           <div className="body">
-            <Markdown>{text}</Markdown>
+            <Markdown children={text} remarkPlugins={[gfm]} components={markdownComponents} />
           </div>
 
           <Divider />
 
-          <Tools userTools={user} adminTools={admin}></Tools>
+          <ArchiveTools archId={archId} />
         </BlogDetail>
         <Comment>
           <div>
@@ -123,50 +97,87 @@ export default function PageArchives() {
           </div>
         </Comment>
       </LeftView>
-      {/* <div style={{ flex: '0.3' }}>
-        <Widges title="文章管理">
-          <BottomGroup>
-            <IconButton text="按钮" />
-            <IconButton text="按钮" />
-            <IconButton text="按钮" />
-          </BottomGroup>
-        </Widges>
-      </div> */}
     </>
   )
 }
 
-// 文章末尾的工具按钮，传入工具列表
-function Tools({ userTools, adminTools }: { userTools: any; adminTools?: any }) {
+function ArchiveTools(props: { archId: string }) {
+  // 博客工具栏
+  const history = useHistory()
+  const { archId } = props
+
+  // 拷贝链接到剪贴板
+  const copyArchiveLink = () => {
+    copyLink(window.location.href)
+    message.success({
+      content: '链接已复制到剪贴板',
+      key: 'copyed-on-board',
+    })
+  }
+
   return (
     <div className="tools">
       <ul id="userTools" className="disableDefaultListStyle">
-        {userTools.map((obj: any) => {
-          return (
-            <Tooltip placement="top" title={obj.tooltip} key={obj.tooltip}>
-              <li onClick={obj.onclick}>{obj.icon}</li>
-            </Tooltip>
-          )
-        })}
+        <Tooltip placement="top" title="获取二维码">
+          <li>
+            <QrcodeOutlined />
+          </li>
+        </Tooltip>
+        <Tooltip placement="top" title="复制文章链接">
+          <li onClick={copyArchiveLink}>
+            <LinkOutlined />
+          </li>
+        </Tooltip>
       </ul>
-      <ul id="adminTools" className="disableDefaultListStyle">
-        {adminTools &&
-          adminTools.map((obj: any) => {
-            return (
-              <Tooltip placement="top" title={obj.tooltip} key={obj.tooltip}>
-                <li onClick={obj.onclick}>{obj.icon}</li>
-              </Tooltip>
-            )
-          })}
+      <ul id="AdminTools" className="disableDefaultListStyle">
+        <Tooltip placement="top" title="编辑文章">
+          <li onClick={() => history.push(`/edit/${archId}`)}>
+            <EditOutlined />
+          </li>
+        </Tooltip>
+        <Tooltip placement="top" title="删除文章">
+          <Popconfirm
+            placement="top"
+            okText="确认"
+            okType="danger"
+            cancelText="取消"
+            title="此操作将会删除这条文章"
+            onConfirm={copyArchiveLink}
+          >
+            <li>
+              <DeleteOutlined />
+            </li>
+          </Popconfirm>
+        </Tooltip>
       </ul>
     </div>
   )
 }
 
+const markdownComponents = {
+  // 高亮语法控制
+  code({ node, inline, className, children, ...props }: any) {
+    const match = /language-(\w+)/.exec(className || '')
+    return !inline && match ? (
+      <SyntaxHighlighter
+        style={atomOneDark}
+        language={match[1]}
+        PreTag="div"
+        showLineNumbers={true}
+        wrapLongLines={true}
+        children={String(children).replace(/\n$/, '')}
+        {...props}
+      />
+    ) : (
+      <code className={className} {...props}>
+        {children}
+      </code>
+    )
+  },
+}
+
 const LeftView = styled.div`
-  flex: 0.7;
-  margin-right: 10px;
-<<<<<<< HEAD
+  flex: 1;
 `
 
 const BlogDetail = styled.div`
@@ -175,24 +186,38 @@ const BlogDetail = styled.div`
   padding: 1.5em;
   display: flex;
   flex-direction: column;
-  #titleBlock {
+  #head {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2em;
-    #title {
-      font-size: 2em;
-      display: block;
-      font-weight: 600;
+    div#titleBlock {
+      display: flex;
+      flex-direction: column;
+      @media all and (max-width: 768px) {
+        width: 0;
+        flex: 0.8;
+      }
+      span#title {
+        font-size: 1.6em;
+        font-weight: 600;
+      }
     }
-    #lastupdate {
-      font-size: 0.5em;
-      color: ${ThemeColor.gray};
+    div#visitBlock {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      @media all and (max-width: 768px) {
+        flex: 0.2;
+      }
     }
+
+    #lastupdate,
     #visited {
       color: ${ThemeColor.gray};
     }
   }
+
   div.tools {
     display: flex;
     justify-content: space-between;
@@ -202,27 +227,32 @@ const BlogDetail = styled.div`
       :hover {
         color: ${ThemeColor.red};
         cursor: pointer;
-=======
-  .archive {
-    background-color: #fff;
-    margin-bottom: 1em;
-    #titleBlock {
-      display: flex;
-      justify-content: space-between;
-      padding: 1.5em;
-      align-items: center;
-      #title {
-        font-size: 2em;
-        display: block;
       }
-      #lastupdate {
-        font-size: .85em;
-        color: ${ThemeColor.gray};
-      }
-      #visited {
-        color: ${ThemeColor.gray};
->>>>>>> d73c26170d5ae4fd796dcf0ca7697c7b150c111d
-      }
+    }
+  }
+  table {
+    font-size: 14px;
+    line-height: 1.7;
+    max-width: 100%;
+    overflow: auto;
+    border: 1px solid #f6f6f6;
+    border-collapse: collapse;
+    border-spacing: 0;
+    box-sizing: border-box;
+    td {
+      border: 1px solid #efefef;
+      text-align: left;
+      padding: 10px 15px;
+      word-break: break-word;
+      min-width: 60px;
+    }
+    th {
+      text-align: center;
+      font-weight: 700;
+      border: 1px solid #efefef;
+      padding: 10px 6px;
+      background-color: #f5f7fa;
+      word-break: break-word;
     }
   }
 `

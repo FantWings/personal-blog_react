@@ -46,10 +46,6 @@ function App() {
               </li>
             </ul>
           </div>
-          <div id="userComponent">
-            <span id="avatar"></span>
-            <span>用户名称</span>
-          </div>
         </div>
       </NavBar>
       <PageContainer>
@@ -81,14 +77,24 @@ const NavBar = styled.div`
       align-items: center;
       margin: 0 1.25rem;
       font-size: 1.25rem;
+      @media all and (max-width: 768px) {
+        display: none;
+      }
     }
 
     #navList {
       flex: 1;
       ul {
+        @media all and (min-width: 769px) {
+          flex: 0.3;
+        }
+        @media all and (max-width: 768px) {
+          flex: 1;
+        }
+
+        justify-content: space-evenly;
         align-items: center;
         li {
-          margin: 0 1rem;
           position: relative;
           a {
             text-decoration: none;
@@ -102,28 +108,19 @@ const NavBar = styled.div`
         }
       }
     }
-
-    #userComponent {
-      align-items: center;
-      #avatar {
-        width: 40px;
-        height: 40px;
-        display: block;
-        background-color: #f5f5f5;
-        border-radius: 100%;
-        margin-right: 0.75em;
-      }
-    }
   }
 `
 
 const PageContainer = styled.div`
   display: flex;
-  padding: 25px;
   height: calc(100% - 64px);
   box-sizing: border-box;
   max-width: 1400px;
   margin: 0 auto;
+  padding: 10px;
+  @media all and (min-width: 768px) {
+    padding: 25px;
+  }
 `
 
 const Footer = styled.div`
