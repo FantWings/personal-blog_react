@@ -3,11 +3,11 @@ import { BrowserRouter } from 'react-router-dom'
 import 'antd/dist/antd.css'
 
 import './index.css'
-import App from './App'
+import Router from './Router'
 
 ReactDOM.render(
   <BrowserRouter>
-    <App />
+    <Router />
   </BrowserRouter>,
   document.getElementById('root')
 )
