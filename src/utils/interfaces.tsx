@@ -2,12 +2,12 @@ export interface archivePreviewRespond {
   id: number
   title: string
   preview: string
-  lastupdate: string
-  view: number
+  update_time: number
+  views: number
   comment: number
   image: string
   tag: Array<string>
-  timeForRead: number
+  time_for_read: number
 }
 
 export interface blogDetailRespond {

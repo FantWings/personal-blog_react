@@ -1,27 +1,16 @@
-import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { ThemeColor } from '../utils/constent'
 
-export default function TagGroup(props: { tags: Array<string>; style?: object }) {
+export default function TagGroup(props: { tags: Array<string>; style?: object; handleUpdate: Function }) {
   // TAG组件
-  const { tags, style } = props
-
-  // 初始化History，当鼠标点击TAG时，将使用history.push把filter参数推送到URL上
-  // 触发父组件刷新并获取筛选数据
-  const history = useHistory()
+  const { tags, style, handleUpdate } = props
 
   return (
     <ul className="tags disableDefaultListStyle">
       {tags &&
         tags.map((tags) => {
           return (
-            <Tags
-              key={tags}
-              onClick={() => {
-                history.push(`?filter_by=${tags}`)
-              }}
-              style={style}
-            >
+            <Tags key={tags} onClick={() => handleUpdate(tags)} style={style}>
               {tags}
             </Tags>
           )

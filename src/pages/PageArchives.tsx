@@ -40,8 +40,15 @@ export default function PageArchives() {
     })
   }, [archId])
 
-  const HandleSubmitComment = () => {
+  const HandleSubmitComment = async () => {
     setSubmitting(!submitting)
+    const token = localStorage.getItem('token')
+    if (!token) {
+      message.error(`UnloginToken: ${token}`)
+      return setSubmitting(false)
+    }
+    await fetchData(`${BASEURL}/api/v1/comment/add?archId=${archId}`, 'POST', { token })
+    setSubmitting(false)
   }
 
   // 解构赋值文章数据
