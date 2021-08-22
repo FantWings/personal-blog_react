@@ -3,9 +3,23 @@ import styled from 'styled-components'
 
 import { Avatar } from 'antd'
 import { UserOutlined } from '@ant-design/icons'
+import { useEffect, useState } from 'react'
+import { useHistory } from 'react-router'
+import fetchData from '../utils/fetch'
+// import { fetchData } from '../utils/fetch'
+// import { BASEURL } from '../config'
+import { BASEURL } from '../config'
 
 export default function Navbar() {
-  const avatarURL = localStorage.getItem('avatarUrl')
+  const history = useHistory()
+  const token = localStorage.getItem('token')
+  const loggedIn = localStorage.getItem('loggedIn')
+  const [avatar, setAvatar] = useState('')
+
+  useEffect(() => {
+    loggedIn && fetchData(`${BASEURL}/api/v1/user/userInfo`, 'GET', { token }).then(({ avatar }) => setAvatar(avatar))
+  }, [loggedIn, token])
+
   return (
     <NavContainer>
       <div>
@@ -22,12 +36,12 @@ export default function Navbar() {
             </li>
             <li>
               <NavLink to="/archives/1" activeClassName="currentPage">
-                技术向
+                时间轴
               </NavLink>
             </li>
             <li>
               <NavLink to="/archives/2" activeClassName="currentPage">
-                游戏向
+                小工具
               </NavLink>
             </li>
             <li>
@@ -35,14 +49,12 @@ export default function Navbar() {
                 档案馆
               </NavLink>
             </li>
-            <li>
-              <NavLink to="/archives/4" activeClassName="currentPage">
-                关于
-              </NavLink>
-            </li>
           </ul>
-          <div id="userBlock">
-            <Avatar icon={avatarURL || <UserOutlined />} src={avatarURL} />
+          <div
+            id="userBlock"
+            onClick={() => (localStorage.getItem('loggedIn') ? history.push('/profile') : history.push('/login'))}
+          >
+            <Avatar icon={avatar || <UserOutlined />} src={avatar} />
           </div>
         </div>
       </div>
@@ -72,12 +84,10 @@ const NavContainer = styled.div`
       align-items: center;
       justify-content: space-between;
       ul {
+        flex: 1;
         justify-content: space-evenly;
         @media all and (min-width: 769px) {
-          flex: 0.5;
-        }
-        @media all and (max-width: 768px) {
-          flex: 1;
+          max-width: 380px;
         }
         li {
           position: relative;
@@ -94,6 +104,9 @@ const NavContainer = styled.div`
       }
       #userBlock {
         align-items: center;
+        :hover {
+          cursor: pointer;
+        }
       }
     }
   }

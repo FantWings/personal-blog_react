@@ -13,9 +13,9 @@ export default function Widges({ title, children }: { title: string; children: o
 }
 
 const PageWidgesContainer = styled.div`
+  flex: 1;
   background-color: #fff;
   padding: 1em;
-  margin-bottom: 10px;
 `
 
 const WidgesTitle = styled.div`

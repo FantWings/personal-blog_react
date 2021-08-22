@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { useHistory } from 'react-router'
 import styled from 'styled-components'
-import { ThemeColor } from '../utils/constent'
-import { message } from 'antd'
-import { fetchData } from '../utils/fetch'
-import { BASEURL } from '../config'
-
 import { LoadingOutlined } from '@ant-design/icons'
+
+import { ThemeColor } from '../utils/constent'
+import fetchData from '../utils/fetch'
+import { BASEURL } from '../config'
+import { userInfoRespond } from '../utils/interfaces'
 
 export default function PageLogin() {
   const [type, setType] = useState(0)
@@ -44,11 +45,7 @@ function LoginForm() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-
-  useEffect(() => {
-    if (loading) return message.loading({ content: '请稍等', key: 'loading' })
-    return message.destroy('loading')
-  }, [loading])
+  const history = useHistory()
 
   const HandleLogin = (e: any) => {
     e.preventDefault()
@@ -56,7 +53,26 @@ function LoginForm() {
     fetchData(`${BASEURL}/api/v1/auth/login`, 'POST', undefined, {
       username,
       password,
-    }).then(() => setLoading(false))
+    })
+      .then(({ token }) => {
+        // 登录成功，将token写入localStorge
+        localStorage.setItem('token', token)
+        // 登录成功，更新登录标
+        localStorage.setItem('loggedIn', 'true')
+        // 登录成功，获取用户信息
+        return fetchData(`${BASEURL}/api/v1/user/userInfo`, 'GET', { token: token })
+      })
+      .then(({ username, uuid }: userInfoRespond) => {
+        //将获取到的用户信息写入LocalStorge
+        localStorage.setItem('username', username)
+        localStorage.setItem('uuid', uuid)
+      })
+      .then(() => {
+        history.goBack()
+      })
+      .catch(() => {
+        setLoading(false)
+      })
   }
   return (
     <CustomForm>
@@ -90,7 +106,10 @@ function LoginForm() {
           <span>忘记密码了？</span>
         </div>
       </div>
-      <button onClick={(e) => HandleLogin(e)}>登录</button>
+      <button onClick={(e) => HandleLogin(e)}>
+        {loading && <LoadingOutlined />}
+        <span style={{ margin: '0 1em' }}>{loading ? '正在请求' : '登录'}</span>
+      </button>
     </CustomForm>
   )
 }
@@ -111,16 +130,25 @@ function RegisterFrom() {
   const HandleRegister = (e: any) => {
     e.preventDefault()
     setLoading(true)
+    // 执行注册操作
     fetchData(`${BASEURL}/api/v1/auth/register`, 'POST', undefined, {
       username,
       password,
       email,
     })
-      .then((data) => {
-        console.log(data)
-        data && localStorage.setItem('token', data.token)
-
-        setLoading(false)
+      .then(({ data, status }) => {
+        if (status) return false
+        // 注册成功，将token写入localStorge
+        localStorage.setItem('token', data.token)
+        // 注册成功，更新登录标
+        localStorage.setItem('loggedIn', 'true')
+        // 注册成功，获取用户信息
+        fetchData(`${BASEURL}/api/v1/user/userInfo`, 'GET', { data: data.token }).then(({ status, data }) => {
+          if (status) return false
+          //将获取到的用户信息写入LocalStorge
+          localStorage.setItem('userInfo', data)
+        })
+        // 登录成功，获取邮箱验证吗
         fetchData(`${BASEURL}/api/v1/auth/2fa/sendVerifyCode?method=email&value=${email}`, 'GET', {
           token: localStorage.getItem('token'),
         })
@@ -130,6 +158,8 @@ function RegisterFrom() {
         setHelloText('验证您的邮箱')
         setDescribeText(`已向${email}发送了一封邮件验证码`)
       })
+      .finally(() => setLoading(false))
+      .catch((e) => console.log(e))
   }
 
   const HandleVerifyCode = (e: any) => {
@@ -236,8 +266,8 @@ function RegisterFrom() {
           <div className="input-row">
             <input
               type="password"
-              name="password"
-              id="password"
+              name="confirmPassword"
+              id="confirmPassword"
               placeholder="确认密码"
               value={verifyPassword}
               onChange={(e) => setVerifyPassword(e.target.value)}

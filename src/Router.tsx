@@ -30,7 +30,8 @@ function App() {
         <Switch>
           <Route path="/" component={PageHome} exact></Route>
           <Route path="/archives/:archId" component={PageArchives} exact></Route>
-          <Route path="/edit/:archId" component={PageEditer} exact></Route>
+          <Route path="/edit" component={PageEditer} exact></Route>
+          <Route path="/add" component={PageEditer} exact></Route>
           <Redirect to="/" />
         </Switch>
       </PageContainer>
@@ -44,18 +45,19 @@ function App() {
 
 const PageContainer = styled.div`
   display: flex;
+  flex-wrap: wrap;
   height: calc(100% - 64px);
   box-sizing: border-box;
   max-width: 1400px;
   margin: 0 auto;
-  padding: 10px;
+  padding: 16px;
   @media all and (min-width: 768px) {
     padding: 25px;
   }
-  @media all and (max-width: 768px) {
+  /* @media all and (max-width: 768px) {
     flex-wrap: wrap;
     flex-direction: column-reverse;
-  }
+  } */
 `
 
 const Footer = styled.div`

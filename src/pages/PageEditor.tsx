@@ -1,4 +1,4 @@
-import { useParams } from 'react-router'
+import { useHistory, useLocation } from 'react-router'
 import MdEditor from 'react-markdown-editor-lite'
 import Markdown from 'react-markdown'
 import gfm from 'remark-gfm'
@@ -6,40 +6,81 @@ import gfm from 'remark-gfm'
 import 'react-markdown-editor-lite/lib/index.css'
 import { useState } from 'react'
 import { useEffect } from 'react'
-import { fetchData } from '../utils/fetch'
+import fetchData from '../utils/fetch'
 import { BASEURL } from '../config'
 import { ThemeColor } from '../utils/constent'
 import styled from 'styled-components'
+import { message } from 'antd'
+import { blogDetailRespond } from '../utils/interfaces'
 
 export default function PageEditer() {
-  const { archId } = useParams<{ archId: string }>()
-  const [text, setText] = useState('')
-  const [title, setTitle] = useState('<undefined>')
+  const location = useLocation<{ edit: boolean; archId: number | undefined }>()
+  const [content, setContent] = useState('')
+  const [title, setTitle] = useState<string | undefined>('')
+  const { edit, archId } = location.state
+  const history = useHistory()
 
   useEffect(() => {
-    fetchData(`${BASEURL}/api/v1/getArchivesDetail/${archId}`).then((data) => {
-      data && setText(data.text)
-      data && setTitle(data.title)
-    })
-  }, [archId])
+    edit &&
+      fetchData(`${BASEURL}/api/v1/archive/getDetail/${archId}`, 'GET')
+        .then(({ content, title }: blogDetailRespond) => {
+          setContent(content)
+          setTitle(title)
+        })
+        .catch((statusCode) => {
+          if (statusCode === 10) return history.push('/login')
+        })
+  }, [edit, archId, history])
 
   const HandleSubmit = () => {
-    console.log(text)
+    const body = { title, content, cover_image: '', time_for_read: 5 }
+    fetchData(`${BASEURL}/api/v1/archive/add`, 'POST', { token: localStorage.getItem('token') }, body)
+      .then(() => {
+        message.success('操作成功')
+        history.push('/')
+      })
+      .catch((statusCode) => {
+        if (statusCode === 10) history.push('/login')
+      })
+  }
+
+  const HandleUpdate = () => {
+    const body = { title, content, cover_image: '', time_for_read: 5 }
+    fetchData(
+      `${BASEURL}/api/v1/archive/update?archId=${archId}`,
+      'POST',
+      { token: localStorage.getItem('token') },
+      body
+    )
+      .then(() => {
+        message.success('操作成功')
+        history.push(`/archives/${archId}`)
+      })
+      .catch((statusCode) => {
+        if (statusCode === 10) return history.push('/login')
+      })
   }
 
   return (
     <div style={{ width: '100%' }}>
       <EditContainer>
-        <div id="titleGroup">
-          <span id="title">您正在编辑文章 {title}</span>
-          <button onClick={HandleSubmit}>提交</button>
+        <div id="title">
+          <span>{edit ? '编辑文章' : '撰写新文章'}</span>
+          <button onClick={edit ? HandleUpdate : HandleSubmit}>提交</button>
         </div>
+        <input
+          type="text"
+          id="archiveTitle"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="文章标题"
+        />
         <MdEditor
-          value={text}
-          renderHTML={(text: string) => {
-            return <Markdown children={text} remarkPlugins={[gfm]} />
+          value={content}
+          renderHTML={(content: string) => {
+            return <Markdown children={content} remarkPlugins={[gfm]} />
           }}
-          onChange={(e) => setText(e.text)}
+          onChange={(e) => setContent(e.text)}
           style={{ height: '600px' }}
         />
       </EditContainer>
@@ -49,11 +90,11 @@ export default function PageEditer() {
 
 const EditContainer = styled.div`
   flex: 1;
-  div#titleGroup {
+  div#title {
     display: flex;
     margin-bottom: 1.5em;
     justify-content: space-between;
-    #title {
+    span {
       flex: 0.88;
       font-size: 1.5em;
       font-weight: 600;
@@ -79,5 +120,15 @@ const EditContainer = styled.div`
         background-color: #000;
       }
     }
+  }
+  #archiveTitle {
+    display: flex;
+    margin: 1em 0;
+    outline: none;
+    border: 1px #d2d2d2 solid;
+    width: 100%;
+    height: 1.75em;
+    font-size: 1.5em;
+    padding: 0.25em;
   }
 `

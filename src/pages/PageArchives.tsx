@@ -12,7 +12,7 @@ import { ThemeColor } from '../utils/constent'
 // import IconButton from '../components/iconButton'
 import { useState } from 'react'
 import { useEffect } from 'react'
-import { fetchData } from '../utils/fetch'
+import fetchData from '../utils/fetch'
 import { blogDetailRespond } from '../utils/interfaces'
 import { BASEURL } from '../config'
 
@@ -23,36 +23,32 @@ export default function PageArchives() {
   // 从URL获取文档ID
   const { archId } = useParams<{ archId: string }>()
   const [data, setData] = useState<blogDetailRespond>({
-    title: 'LOL',
-    text: '# This is a header\n\nAnd this is a paragraph',
-    date: '2021年7月26日10:34:43',
-    view: 100,
-    comment: null,
-    owner: false,
+    title: '',
+    createTime: 0,
+    updateTime: 0,
+    views: 0,
+    author: undefined,
+    content: '',
+    coverImage: undefined,
   })
   // const [loading, setLoading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [commentText, setCommentText] = useState('')
 
   useEffect(() => {
-    fetchData(`${BASEURL}/api/v1/getArchivesDetail/${archId}`).then((data) => {
-      data && setData(data)
+    fetchData(`${BASEURL}/api/v1/archive/getDetail/${archId}`, 'GET').then((data: blogDetailRespond) => {
+      setData(data)
     })
   }, [archId])
 
-  const HandleSubmitComment = async () => {
-    setSubmitting(!submitting)
+  const HandleSubmitComment = () => {
+    setSubmitting(true)
     const token = localStorage.getItem('token')
-    if (!token) {
-      message.error(`UnloginToken: ${token}`)
-      return setSubmitting(false)
-    }
-    await fetchData(`${BASEURL}/api/v1/comment/add?archId=${archId}`, 'POST', { token })
-    setSubmitting(false)
+    fetchData(`${BASEURL}/api/v1/comment/add?archId=${archId}`, 'POST', { token }).finally(() => setSubmitting(false))
   }
 
   // 解构赋值文章数据
-  const { title, text, date, view } = data
+  const { title, createTime, views, content, author } = data
   return (
     <>
       <LeftView>
@@ -62,20 +58,20 @@ export default function PageArchives() {
               <span id="title" className="textHidden-singleLine-if-overflow">
                 {title}
               </span>
-              <span id="lastupdate">{date}</span>
+              <span id="lastupdate">{new Date(createTime).toLocaleString()}</span>
             </div>
             <div id="visitBlock">
               <span id="visited">被浏览</span>
-              <span>{view}</span>
+              <span>{views}</span>
             </div>
           </div>
           <div className="body">
-            <Markdown children={text} remarkPlugins={[gfm]} components={markdownComponents} />
+            <Markdown children={content} remarkPlugins={[gfm]} components={markdownComponents} />
           </div>
 
           <Divider />
 
-          <ArchiveTools archId={archId} />
+          <ArchiveTools archId={archId} author={author} />
         </BlogDetail>
         <Comment>
           <div>
@@ -108,10 +104,10 @@ export default function PageArchives() {
   )
 }
 
-function ArchiveTools(props: { archId: string }) {
+function ArchiveTools(props: { archId: string; author: string | undefined }) {
   // 博客工具栏
   const history = useHistory()
-  const { archId } = props
+  const { archId, author } = props
 
   // 拷贝链接到剪贴板
   const copyArchiveLink = () => {
@@ -120,6 +116,20 @@ function ArchiveTools(props: { archId: string }) {
       content: '链接已复制到剪贴板',
       key: 'copyed-on-board',
     })
+  }
+
+  const HandleArchiveDelete = () => {
+    fetchData(`${BASEURL}/api/v1/archive/delete?archId=${archId}`, 'POST', {
+      token: localStorage.getItem('token'),
+    }).then(
+      () => {
+        message.success('操作成功')
+        history.push('/')
+      },
+      () => {
+        return false
+      }
+    )
   }
 
   return (
@@ -136,27 +146,29 @@ function ArchiveTools(props: { archId: string }) {
           </li>
         </Tooltip>
       </ul>
-      <ul id="AdminTools" className="disableDefaultListStyle">
-        <Tooltip placement="top" title="编辑文章">
-          <li onClick={() => history.push(`/edit/${archId}`)}>
-            <EditOutlined />
-          </li>
-        </Tooltip>
-        <Tooltip placement="top" title="删除文章">
-          <Popconfirm
-            placement="top"
-            okText="确认"
-            okType="danger"
-            cancelText="取消"
-            title="此操作将会删除这条文章"
-            onConfirm={copyArchiveLink}
-          >
-            <li>
-              <DeleteOutlined />
+      {author === localStorage.getItem('username') && (
+        <ul id="AdminTools" className="disableDefaultListStyle">
+          <Tooltip placement="top" title="编辑文章">
+            <li onClick={() => history.push('/edit', { edit: true, archId })}>
+              <EditOutlined />
             </li>
-          </Popconfirm>
-        </Tooltip>
-      </ul>
+          </Tooltip>
+          <Tooltip placement="top" title="删除文章">
+            <Popconfirm
+              placement="top"
+              okText="确认"
+              okType="danger"
+              cancelText="取消"
+              title="此操作将会删除这条文章"
+              onConfirm={HandleArchiveDelete}
+            >
+              <li>
+                <DeleteOutlined />
+              </li>
+            </Popconfirm>
+          </Tooltip>
+        </ul>
+      )}
     </div>
   )
 }

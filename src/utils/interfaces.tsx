@@ -1,3 +1,9 @@
+export interface standerdResponse {
+  data: any
+  msg: string
+  status: number
+}
+
 export interface archivePreviewRespond {
   id: number
   title: string
@@ -11,10 +17,20 @@ export interface archivePreviewRespond {
 }
 
 export interface blogDetailRespond {
-  title: string
-  text: string
-  date: string
-  view: number
-  comment: null | object
-  owner: boolean
+  title: string | undefined
+  views: number
+  author: string | undefined
+  updateTime: number
+  createTime: number
+  content: string
+  coverImage: string | undefined
+}
+
+export interface userInfoRespond {
+  avatar?: string
+  email?: string
+  phone?: number
+  qq?: number
+  username: string
+  uuid: string
 }

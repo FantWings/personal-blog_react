@@ -4,12 +4,12 @@ import styled from 'styled-components'
 
 import { ThemeColor } from '../utils/constent'
 import { archivePreviewRespond } from '../utils/interfaces'
-import { fetchData } from '../utils/fetch'
+import fetchData from '../utils/fetch'
 import { Link, useHistory } from 'react-router-dom'
 import { BASEURL } from '../config'
 import Widges from '../components/widges'
 import TagGroup from '../components/tagGroup'
-import { LoadingOutlined } from '@ant-design/icons'
+import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
 
 export default function PageHome() {
   const history = useHistory()
@@ -19,30 +19,35 @@ export default function PageHome() {
 
   useEffect(() => {
     setLoading(true)
-    fetchData(`${BASEURL}/api/v1/getArchivesList${history.location.search}`)
-      .then((data) => {
-        if (data) setData(data)
-      })
-      .then(() => setLoading(false))
+    fetchData(`${BASEURL}/api/v1/archive/getList${history.location.search}`, 'GET')
+      .then((data) => setData(data))
+      .finally(() => setLoading(false))
     // 监听URLsearch参数，用于TAG给组件进行触发筛选
   }, [history.location.search])
 
   useEffect(() => {
-    fetchData(`${BASEURL}/api/v1/getArchivesTags`).then((data) => setTags(data))
+    fetchData(`${BASEURL}/api/v1/archive/getTags`, 'GET').then((data) => setTags(data))
   }, [])
 
   const filterByTags = (tags: string) => {
     setLoading(true)
-    fetchData(`${BASEURL}/api/v1/getArchivesList?filter_by=${tags}`)
-      .then((data) => {
-        if (data) setData(data)
-      })
-      .then(() => setLoading(false))
+    fetchData(`${BASEURL}/api/v1/archive/getList?filter_by=${tags}`, 'GET')
+      .then((data) => setData(data))
+      .finally(() => setLoading(false))
   }
 
   return (
     <>
-      <div style={{ flex: 1 }}>
+      <NoticeBar>
+        <span>提示：哈哈</span>
+      </NoticeBar>
+      <ArchivesContianer>
+        {localStorage.getItem('loggedIn') && (
+          <AddArchive onClick={() => history.push('/add', { edit: false })}>
+            <PlusOutlined />
+            <span>撰写新文章</span>
+          </AddArchive>
+        )}
         {data.map(({ id, image, title, preview, views, time_for_read, update_time, tag }: archivePreviewRespond) => {
           return (
             <ArchivesPreview key={id}>
@@ -65,7 +70,7 @@ export default function PageHome() {
                 <ul className="info disableDefaultListStyle">
                   <li>阅读量：{views}</li>
                   <li>阅读时间：{time_for_read}分钟</li>
-                  <li>最后更新：{update_time}</li>
+                  <li>最后更新：{new Date(update_time).toLocaleString()}</li>
                 </ul>
                 <TagGroup tags={tag} handleUpdate={filterByTags} />
               </div>
@@ -75,7 +80,7 @@ export default function PageHome() {
         <Loadmore style={{ cursor: loading ? 'wait' : 'pointer' }} onClick={() => setLoading(!loading)}>
           {loading ? <LoadingOutlined /> : '- 加载更多 -'}
         </Loadmore>
-      </div>
+      </ArchivesContianer>
       <WidgesContainer>
         <Widges title="标签筛选">
           <TagGroup tags={tags} handleUpdate={filterByTags} style={{ marginBottom: '1em' }} />
@@ -84,6 +89,43 @@ export default function PageHome() {
     </>
   )
 }
+
+const NoticeBar = styled.div`
+  flex: 1 100%;
+  padding: 0.75em;
+  margin-bottom: 0.75em;
+  background-color: #fff2cf;
+  color: #d8b550;
+  order: 10;
+`
+
+const ArchivesContianer = styled.div`
+  order: 20;
+  flex: 1;
+  flex-wrap: wrap;
+  @media all and (max-width: 768px) {
+    flex-basis: 100%;
+  }
+`
+
+const AddArchive = styled.div`
+  height: 64px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: transparent;
+  color: ${ThemeColor.gray};
+  cursor: pointer;
+  transition: 0.3s;
+  margin-bottom: 1em;
+  border: 1px dashed ${ThemeColor.gray};
+  :hover {
+    color: ${ThemeColor.dark};
+  }
+  span {
+    margin: 2px;
+  }
+`
 
 const ArchivesPreview = styled.div`
   display: flex;
@@ -172,24 +214,35 @@ const ArchivesPreview = styled.div`
     }
   }
 `
-
-const WidgesContainer = styled.div`
-  min-width: 300px;
-  @media all and (min-width: 769px) {
-    margin-left: 10px;
-  }
-`
-
 const Loadmore = styled.div`
-  height: 64px;
   display: flex;
   justify-content: center;
   align-items: center;
+  flex: 1 100%;
+  height: 64px;
+
   background-color: #fff;
   color: ${ThemeColor.gray};
   cursor: pointer;
   transition: 0.3s;
   :hover {
     color: ${ThemeColor.dark};
+  }
+`
+
+const WidgesContainer = styled.div`
+  display: flex;
+  flex: 1;
+
+  min-width: 300px;
+  @media all and (min-width: 769px) {
+    order: 30;
+    margin-left: 10px;
+    flex: 0.3;
+  }
+
+  @media all and (max-width: 768px) {
+    order: 11;
+    margin-bottom: 1em;
   }
 `
