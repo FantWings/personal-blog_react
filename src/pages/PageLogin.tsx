@@ -76,7 +76,7 @@ function LoginForm() {
   }
   return (
     <CustomForm>
-      <h2>使用账号密码登录</h2>
+      <h2>使用账号密码登录</h2>
       <div className="fromContain">
         <div className="form-block">
           <div className="input-row">
