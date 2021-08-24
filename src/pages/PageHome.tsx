@@ -22,11 +22,14 @@ export default function PageHome() {
     fetchData(`${BASEURL}/api/v1/archive/getList${history.location.search}`, 'GET')
       .then((data) => setData(data))
       .finally(() => setLoading(false))
+      .catch(({ msg }) => console.log(`博文列表获取失败：${msg}`))
     // 监听URLsearch参数，用于TAG给组件进行触发筛选
   }, [history.location.search])
 
   useEffect(() => {
-    fetchData(`${BASEURL}/api/v1/archive/getTags`, 'GET').then((data) => setTags(data))
+    fetchData(`${BASEURL}/api/v1/archive/getTags`, 'GET')
+      .then((data) => setTags(data))
+      .catch(({ msg }) => console.log(`TAG列表获取失败：${msg}`))
   }, [])
 
   const filterByTags = (tags: string) => {
@@ -34,13 +37,18 @@ export default function PageHome() {
     fetchData(`${BASEURL}/api/v1/archive/getList?filter_by=${tags}`, 'GET')
       .then((data) => setData(data))
       .finally(() => setLoading(false))
+      .catch(({ msg }) => console.log(msg))
   }
 
   return (
     <>
-      <NoticeBar>
-        <span>提示：哈哈</span>
-      </NoticeBar>
+      {localStorage.getItem('loggedIn') && localStorage.getItem('email') === '' && (
+        <NoticeBar>
+          <span>
+            您需要验证您的邮箱才可以发布回复、订阅、留言等操作。 <span id="verifyBtn">前往验证</span>
+          </span>
+        </NoticeBar>
+      )}
       <ArchivesContianer>
         {localStorage.getItem('loggedIn') && (
           <AddArchive onClick={() => history.push('/add', { edit: false })}>
@@ -97,6 +105,12 @@ const NoticeBar = styled.div`
   background-color: #fff2cf;
   color: #d8b550;
   order: 10;
+  span#verifyBtn {
+    color: '#909eff';
+    :hover {
+      cursor: pointer;
+    }
+  }
 `
 
 const ArchivesContianer = styled.div`

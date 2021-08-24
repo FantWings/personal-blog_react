@@ -28,7 +28,7 @@ export interface blogDetailRespond {
 
 export interface userInfoRespond {
   avatar?: string
-  email?: string
+  email: { addr: string; verifyed: number }
   phone?: number
   qq?: number
   username: string

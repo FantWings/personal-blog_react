@@ -62,16 +62,13 @@ function LoginForm() {
         // 登录成功，获取用户信息
         return fetchData(`${BASEURL}/api/v1/user/userInfo`, 'GET', { token: token })
       })
-      .then(({ username, uuid }: userInfoRespond) => {
-        //将获取到的用户信息写入LocalStorge
-        localStorage.setItem('username', username)
-        localStorage.setItem('uuid', uuid)
-      })
-      .then(() => {
-        history.goBack()
-      })
-      .catch(() => {
+      .then((userInfoData: userInfoRespond) => doLogin(userInfoData))
+      .then(() => history.goBack())
+      .finally(() => {
         setLoading(false)
+      })
+      .catch((e) => {
+        console.log(e)
       })
   }
   return (
@@ -119,63 +116,67 @@ function RegisterFrom() {
   const [password, setPassword] = useState('')
   const [verifyPassword, setVerifyPassword] = useState('')
   const [email, setEmail] = useState('')
-  const [verifyCode, setVerifyCode] = useState('')
   const [helloText, setHelloText] = useState('让我们开始吧！')
   const [describeText, setDescribeText] = useState('设置一个用户名')
   const [showDescribe, setShowDescribe] = useState(false)
   const [checkPass, setCheckPass] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [verifyStage, setVerifyStage] = useState(false)
+  const [buttom, setButtom] = useState('创建账号')
+  const history = useHistory()
 
   const HandleRegister = (e: any) => {
     e.preventDefault()
     setLoading(true)
+    setButtom('正在请求')
     // 执行注册操作
     fetchData(`${BASEURL}/api/v1/auth/register`, 'POST', undefined, {
       username,
       password,
       email,
     })
-      .then(({ data, status }) => {
-        if (status) return false
+      .then(({ token }) => {
         // 注册成功，将token写入localStorge
-        localStorage.setItem('token', data.token)
-        // 注册成功，更新登录标
-        localStorage.setItem('loggedIn', 'true')
+        localStorage.setItem('token', token)
         // 注册成功，获取用户信息
-        fetchData(`${BASEURL}/api/v1/user/userInfo`, 'GET', { data: data.token }).then(({ status, data }) => {
-          if (status) return false
-          //将获取到的用户信息写入LocalStorge
-          localStorage.setItem('userInfo', data)
-        })
+        return fetchData(`${BASEURL}/api/v1/user/userInfo`, 'GET', { token })
+      })
+      .then((userInfoData: userInfoRespond) => {
+        doLogin(userInfoData)
         // 登录成功，获取邮箱验证吗
-        fetchData(`${BASEURL}/api/v1/auth/2fa/sendVerifyCode?method=email&value=${email}`, 'GET', {
-          token: localStorage.getItem('token'),
-        })
+        // return fetchData(`${BASEURL}/api/v1/auth/2fa/sendVerifyCode?method=email&value=${email}`, 'GET', {
+        //   token: localStorage.getItem('token'),
+        // })
       })
-      .then(() => {
-        setVerifyStage(true)
-        setHelloText('验证您的邮箱')
-        setDescribeText(`已向${email}发送了一封邮件验证码`)
+      // .then(() => {
+      //   setVerifyStage(true)
+      //   setHelloText('验证您的邮箱')
+      //   setDescribeText(`已向${email}发送了一封邮件验证码`)
+      // })
+      .then(() => history.push('/'))
+      .finally(() => {
+        setButtom('再试一次')
+        setLoading(false)
       })
-      .finally(() => setLoading(false))
-      .catch((e) => console.log(e))
+      .catch((e) => {
+        console.log(e)
+      })
   }
 
-  const HandleVerifyCode = (e: any) => {
-    e.preventDefault()
-    setLoading(true)
-    fetchData(
-      `${BASEURL}/api/v1/auth/2fa/bound?method=email`,
-      'POST',
-      { token: localStorage.getItem('token') },
-      {
-        verifyCode,
-      }
-    )
-  }
+  // const HandleVerifyCode = (e: any) => {
+  //   e.preventDefault()
+  //   setLoading(true)
+  //   fetchData(
+  //     `${BASEURL}/api/v1/auth/2fa/bound?method=email`,
+  //     'POST',
+  //     { token: localStorage.getItem('token') },
+  //     {
+  //       verifyCode,
+  //     }
+  //   )
+  // }
 
   const checkUsername = () => {
+    // 剔除用户名的标点符号
     setUsername(username.replace(/[^a-zA-Z0-9\u4E00-\u9FA5]/g, ''))
   }
 
@@ -197,6 +198,10 @@ function RegisterFrom() {
       setDescribeText('哎呀，两次密码不对哦！')
       return setCheckPass(false)
     }
+    if (email.length <= 5) {
+      setDescribeText('请输入您的邮箱，用于绑定和找回密码')
+      return setCheckPass(false)
+    }
     if (!email.includes('@')) {
       setDescribeText('哎呀，邮箱格式不对！应该含有@符号！')
       return setCheckPass(false)
@@ -209,27 +214,31 @@ function RegisterFrom() {
     setCheckPass(true)
   }
 
-  const verifyEmailFrom = () => {
-    return (
-      <div className="form-block">
-        <div className="input-row">
-          <input
-            type="number"
-            name="verifyCode"
-            id="verifyCode"
-            value={verifyCode}
-            maxLength={6}
-            placeholder="验证码"
-            onChange={(e) => setVerifyCode(e.target.value)}
-          />
-        </div>
-      </div>
-    )
-  }
+  // const verifyEmailFrom = () => {
+  //   return (
+  //     <div className="form-block">
+  //       <div className="input-row">
+  //         <input
+  //           type="number"
+  //           name="verifyCode"
+  //           id="verifyCode"
+  //           value={verifyCode}
+  //           maxLength={6}
+  //           placeholder="验证码"
+  //           onChange={(e) => setVerifyCode(e.target.value)}
+  //         />
+  //       </div>
+  //     </div>
+  //   )
+  // }
 
-  const regFrom = () => {
-    return (
-      <>
+  return (
+    <CustomForm>
+      <h2>{helloText}</h2>
+      <span id="describe" style={{ opacity: showDescribe ? 1 : 0, height: showDescribe ? '1rem' : '0rem' }}>
+        {describeText}
+      </span>
+      <div className="fromContain">
         <div className="form-block">
           <div className="input-row">
             <input
@@ -286,33 +295,33 @@ function RegisterFrom() {
               value={email}
               placeholder="绑定邮箱"
               onChange={(e) => setEmail(e.target.value)}
-              onBlur={() => checkEveryThing()}
+              onKeyUp={() => checkEveryThing()}
             />
           </div>
         </div>
-      </>
-    )
-  }
-
-  return (
-    <CustomForm>
-      <h2>{helloText}</h2>
-      <span id="describe" style={{ opacity: showDescribe ? 1 : 0, height: showDescribe ? '1rem' : '0rem' }}>
-        {describeText}
-      </span>
-      <div className="fromContain">{verifyStage ? verifyEmailFrom() : regFrom()}</div>
+      </div>
       <button
-        onClick={(e) => (verifyStage ? HandleVerifyCode(e) : HandleRegister(e))}
+        onClick={(e) => HandleRegister(e)}
         style={{
           pointerEvents: checkPass && !loading ? 'unset' : 'none',
           backgroundColor: checkPass && !loading ? '#333' : '#888',
         }}
       >
         {loading && <LoadingOutlined />}
-        <span style={{ margin: '0 1em' }}>{loading ? '正在请求' : '创建账号'}</span>
+        <span style={{ margin: '0 1em' }}>{buttom}</span>
       </button>
     </CustomForm>
   )
+}
+
+function doLogin(userInfoData: userInfoRespond) {
+  // 添加登录标
+  localStorage.setItem('loggedIn', 'true')
+  // 将获取到的用户信息写入LocalStorge
+  localStorage.setItem('username', userInfoData.username)
+  localStorage.setItem('email', userInfoData.email.verifyed ? userInfoData.email.addr : '')
+  localStorage.setItem('uuid', userInfoData.uuid)
+  localStorage.setItem('avatar', userInfoData.avatar || '')
 }
 
 const PageContainer = styled.div`
