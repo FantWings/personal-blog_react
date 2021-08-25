@@ -16,6 +16,13 @@ export default function PageHome() {
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState([])
   const [tags, setTags] = useState([])
+  const [role, setRole] = useState(0)
+
+  useEffect(() => {
+    fetchData(`${BASEURL}/api/v1/user/getRole`, 'GET', { token: localStorage.getItem('token') }).then(
+      ({ data: role }) => setRole(role)
+    )
+  }, [])
 
   useEffect(() => {
     setLoading(true)
@@ -50,7 +57,7 @@ export default function PageHome() {
         </NoticeBar>
       )}
       <ArchivesContianer>
-        {localStorage.getItem('loggedIn') && (
+        {role === 10 && (
           <AddArchive onClick={() => history.push('/add', { edit: false })}>
             <PlusOutlined />
             <span>撰写新文章</span>
@@ -86,7 +93,7 @@ export default function PageHome() {
           )
         })}
         <Loadmore style={{ cursor: loading ? 'wait' : 'pointer' }} onClick={() => setLoading(!loading)}>
-          {loading ? <LoadingOutlined /> : '- 加载更多 -'}
+          {loading ? <LoadingOutlined /> : '加载更多'}
         </Loadmore>
       </ArchivesContianer>
       <WidgesContainer>
@@ -106,8 +113,10 @@ const NoticeBar = styled.div`
   color: #d8b550;
   order: 10;
   span#verifyBtn {
-    color: '#909eff';
+    color: #909eff;
+    transition: all 0.3s;
     :hover {
+      color: #7c8efd;
       cursor: pointer;
     }
   }
@@ -247,8 +256,7 @@ const Loadmore = styled.div`
 const WidgesContainer = styled.div`
   display: flex;
   flex: 1;
-
-  min-width: 300px;
+  min-width: 260px;
   @media all and (min-width: 769px) {
     order: 30;
     margin-left: 10px;

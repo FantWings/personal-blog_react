@@ -16,6 +16,7 @@ const PageWidgesContainer = styled.div`
   flex: 1;
   background-color: #fff;
   padding: 1em;
+  max-height: 200px;
 `
 
 const WidgesTitle = styled.div`

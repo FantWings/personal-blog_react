@@ -126,8 +126,8 @@ function ArchiveTools(props: { archId: string; author: string | undefined }) {
         message.success('操作成功')
         history.push('/')
       },
-      () => {
-        return false
+      ({ status }) => {
+        if (status === 10) history.push('/login')
       }
     )
   }
@@ -197,6 +197,7 @@ const markdownComponents = {
 
 const LeftView = styled.div`
   flex: 1;
+  width: 0;
 `
 
 const BlogDetail = styled.div`

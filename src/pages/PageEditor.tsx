@@ -27,8 +27,8 @@ export default function PageEditer() {
           setContent(content)
           setTitle(title)
         })
-        .catch((statusCode) => {
-          if (statusCode === 10) return history.push('/login')
+        .catch(({ status }) => {
+          if (status === 10) return history.push('/login')
         })
   }, [edit, archId, history])
 
@@ -39,8 +39,8 @@ export default function PageEditer() {
         message.success('操作成功')
         history.push('/')
       })
-      .catch((statusCode) => {
-        if (statusCode === 10) history.push('/login')
+      .catch(({ status }) => {
+        if (status === 10) history.push('/login')
       })
   }
 
@@ -56,8 +56,8 @@ export default function PageEditer() {
         message.success('操作成功')
         history.push(`/archives/${archId}`)
       })
-      .catch((statusCode) => {
-        if (statusCode === 10) return history.push('/login')
+      .catch(({ status }) => {
+        if (status === 10) return history.push('/login')
       })
   }
 
@@ -83,6 +83,16 @@ export default function PageEditer() {
           onChange={(e) => setContent(e.text)}
           style={{ height: '600px' }}
         />
+        <div id="extraInfo">
+          <div id="coverImage">
+            <h3>封面图地址</h3>
+            <input type="text" name="设置文章封面图" id="coverImage" />
+          </div>
+          <div id="coverImage">
+            <h3>封面图地址</h3>
+            <input type="text" name="设置文章封面图" id="coverImage" />
+          </div>
+        </div>
       </EditContainer>
     </div>
   )
@@ -90,6 +100,7 @@ export default function PageEditer() {
 
 const EditContainer = styled.div`
   flex: 1;
+  padding: 1em;
   div#title {
     display: flex;
     margin-bottom: 1.5em;
@@ -130,5 +141,16 @@ const EditContainer = styled.div`
     height: 1.75em;
     font-size: 1.5em;
     padding: 0.25em;
+  }
+  #extraInfo {
+    margin-top: 2em;
+    div {
+      margin: 1em;
+      input {
+        border: 1px #d2d2d2 solid;
+        padding: 0.25em;
+        width: 100%;
+      }
+    }
   }
 `

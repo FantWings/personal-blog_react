@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useHistory } from 'react-router'
 import styled from 'styled-components'
+import { Avatar } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
 
 import { ThemeColor } from '../utils/constent'
@@ -33,7 +34,6 @@ export default function PageLogin() {
           >
             注册
           </span>
-          {/* <button onClick={() => setType(1)}>Switch</button> */}
         </TypeSwitcher>
         <>{type ? <RegisterFrom /> : <LoginForm />}</>
       </LoginContainer>
@@ -44,6 +44,7 @@ export default function PageLogin() {
 function LoginForm() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [avatar, setAvatar] = useState('')
   const [loading, setLoading] = useState(false)
   const history = useHistory()
 
@@ -71,9 +72,30 @@ function LoginForm() {
         console.log(e)
       })
   }
+
+  const HandleGetAvatar = () => {
+    if (username) {
+      fetchData(`${BASEURL}/api/v1/user/avatar?username=${username}`, 'GET').then(
+        ({ data }) => setAvatar(data),
+        (reason) => {
+          console.log(reason)
+        }
+      )
+    } else {
+      setAvatar('')
+    }
+  }
+
   return (
     <CustomForm>
-      <h2>使用账号密码登录</h2>
+      {avatar ? (
+        <div id="avatar">
+          <Avatar src={avatar} size={48} />
+          <span>欢迎回来！{username}</span>
+        </div>
+      ) : (
+        <h2>使用账号密码登录</h2>
+      )}
       <div className="fromContain">
         <div className="form-block">
           <div className="input-row">
@@ -84,6 +106,7 @@ function LoginForm() {
               value={username}
               placeholder="用户名或邮箱"
               onChange={(e) => setUsername(e.target.value)}
+              onBlur={() => HandleGetAvatar()}
             />
           </div>
         </div>
@@ -327,6 +350,7 @@ function doLogin(userInfoData: userInfoRespond) {
 const PageContainer = styled.div`
   display: flex;
   justify-content: center;
+  transition: all 0.3s;
   @media all and (min-width: 768px) {
     align-items: center;
   }
@@ -388,6 +412,17 @@ const CustomForm = styled.form`
     text-align: center;
     margin: 0;
   }
+
+  #avatar {
+    display: inherit;
+    justify-content: center;
+    align-items: center;
+    span {
+      margin: 0 0.25em;
+      font-size: 1.25em;
+    }
+  }
+
   #describe {
     display: flex;
     font-size: 0.75em;

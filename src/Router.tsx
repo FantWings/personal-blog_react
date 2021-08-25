@@ -48,7 +48,7 @@ const PageContainer = styled.div`
   flex-wrap: wrap;
   height: calc(100% - 64px);
   box-sizing: border-box;
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 16px;
   @media all and (min-width: 768px) {

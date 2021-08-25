@@ -6,19 +6,25 @@ import { UserOutlined } from '@ant-design/icons'
 import { useEffect, useState } from 'react'
 import { useHistory } from 'react-router'
 import fetchData from '../utils/fetch'
-// import { fetchData } from '../utils/fetch'
-// import { BASEURL } from '../config'
 import { BASEURL } from '../config'
 
 export default function Navbar() {
   const history = useHistory()
   const token = localStorage.getItem('token')
-  const loggedIn = localStorage.getItem('loggedIn')
+  const [loggedIn, setLoggedIn] = useState(false)
   const [avatar, setAvatar] = useState('')
 
   useEffect(() => {
-    loggedIn && fetchData(`${BASEURL}/api/v1/user/userInfo`, 'GET', { token }).then(({ avatar }) => setAvatar(avatar))
-  }, [loggedIn, token])
+    fetchData(`${BASEURL}/api/v1/user/userInfo`, 'GET', { token }).then(
+      ({ avatar }) => {
+        setAvatar(avatar)
+        setLoggedIn(true)
+      },
+      ({ status }) => {
+        if (status === 10) setLoggedIn(false)
+      }
+    )
+  }, [token])
 
   return (
     <NavContainer>
@@ -35,26 +41,31 @@ export default function Navbar() {
               </NavLink>
             </li>
             <li>
-              <NavLink to="/archives/1" activeClassName="currentPage">
+              <NavLink to="/" activeClassName="currentPage">
                 时间轴
               </NavLink>
             </li>
             <li>
-              <NavLink to="/archives/2" activeClassName="currentPage">
+              <NavLink to="/" activeClassName="currentPage">
                 小工具
               </NavLink>
             </li>
             <li>
-              <NavLink to="/archives/3" activeClassName="currentPage">
+              <NavLink to="/" activeClassName="currentPage">
                 档案馆
               </NavLink>
             </li>
           </ul>
-          <div
-            id="userBlock"
-            onClick={() => (localStorage.getItem('loggedIn') ? history.push('/profile') : history.push('/login'))}
-          >
-            <Avatar icon={avatar || <UserOutlined />} src={avatar} />
+          <div id="userBlock">
+            {loggedIn ? (
+              <span onClick={() => history.push('/profile')}>
+                <Avatar icon={!avatar && <UserOutlined />} src={avatar} />
+              </span>
+            ) : (
+              <span id="loginBtn" onClick={() => history.push('/login')}>
+                登录
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -102,10 +113,19 @@ const NavContainer = styled.div`
           }
         }
       }
-      #userBlock {
+      div#userBlock {
         align-items: center;
-        :hover {
-          cursor: pointer;
+        span#loginBtn {
+          padding: 4px 10px;
+          background-color: #f3f3f3;
+          border-radius: 2px;
+          color: #8d99ae;
+          transition: all 0.3s;
+          :hover {
+            cursor: pointer;
+            background-color: #333;
+            color: #fff;
+          }
         }
       }
     }

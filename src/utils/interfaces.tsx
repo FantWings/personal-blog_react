@@ -33,4 +33,5 @@ export interface userInfoRespond {
   qq?: number
   username: string
   uuid: string
+  role: number
 }

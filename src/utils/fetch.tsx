@@ -14,13 +14,15 @@ const fetchData = (url: string, method: 'GET' | 'POST' | 'PUT', headers?: object
           case 200:
             return Promise.resolve(response.json())
           case 400:
-            return Promise.reject({ reason: '请求包含语法错误或无法完成请求！', status })
+            return Promise.reject({ msg: '请求包含语法错误或无法完成请求！', status })
           case 404:
-            return Promise.reject({ reason: '请求的资源未找到！', status })
+            return Promise.reject({ msg: '请求的资源未找到！', status })
           case 500:
-            return Promise.reject({ reason: '服务器在处理请求的过程中发生了错误', status })
+            return Promise.reject({ msg: '服务器在处理请求的过程中发生了错误', status })
+          case 405:
+            return Promise.reject({ msg: '请求方式不被允许', status })
           default:
-            return Promise.reject({ reason: '未知错误，请求失败', status })
+            return Promise.reject({ msg: '未知错误，请求失败', status })
         }
       },
       (response) => {
@@ -36,6 +38,8 @@ const fetchData = (url: string, method: 'GET' | 'POST' | 'PUT', headers?: object
       (jsonData: standerdResponse) => {
         const { data, status, msg } = jsonData
         switch (status) {
+          case 0:
+            return Promise.resolve(data)
           case 1:
             msg && message.error({ content: msg, key: 'errMsg' })
             return Promise.reject({ status, msg })
@@ -44,14 +48,13 @@ const fetchData = (url: string, method: 'GET' | 'POST' | 'PUT', headers?: object
             return Promise.reject({ status, msg })
           case 10:
             localStorage.clear()
-            message.warn({ content: '登录状态失效，请刷新页面', key: 'loginRequiredMsg' })
-            return Promise.reject(status)
-          default:
-            return Promise.resolve(data)
+            message.warn({ content: '登录状态失效，请重新登录', key: 'loginRequiredMsg' })
+            return Promise.reject({ status, msg })
         }
       },
-      ({ reason, status }) => {
-        message.error(`${reason} - ${status}`)
+      ({ msg, status }) => {
+        message.error(`${status}  ${msg}`)
+        return Promise.reject({ status, msg })
       }
     )
 }
