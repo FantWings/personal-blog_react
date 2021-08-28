@@ -33,11 +33,11 @@ export default function PageHome() {
     // 监听URLsearch参数，用于TAG给组件进行触发筛选
   }, [history.location.search])
 
-  useEffect(() => {
-    fetchData(`${BASEURL}/api/v1/archive/getTags`, 'GET')
-      .then((data) => setTags(data))
-      .catch(({ msg }) => console.log(`TAG列表获取失败：${msg}`))
-  }, [])
+  // useEffect(() => {
+  //   fetchData(`${BASEURL}/api/v1/archive/getTags`, 'GET')
+  //     .then((data) => setTags(data))
+  //     .catch(({ msg }) => console.log(`TAG列表获取失败：${msg}`))
+  // }, [])
 
   const filterByTags = (tags: string) => {
     setLoading(true)
@@ -96,11 +96,11 @@ export default function PageHome() {
           {loading ? <LoadingOutlined /> : '加载更多'}
         </Loadmore>
       </ArchivesContianer>
-      <WidgesContainer>
+      {/* <WidgesContainer>
         <Widges title="标签筛选">
           <TagGroup tags={tags} handleUpdate={filterByTags} style={{ marginBottom: '1em' }} />
         </Widges>
-      </WidgesContainer>
+      </WidgesContainer> */}
     </>
   )
 }

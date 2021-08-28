@@ -32,20 +32,12 @@ export default function PageArchives() {
     coverImage: undefined,
   })
   // const [loading, setLoading] = useState(false)
-  const [submitting, setSubmitting] = useState(false)
-  const [commentText, setCommentText] = useState('')
 
   useEffect(() => {
     fetchData(`${BASEURL}/api/v1/archive/getDetail/${archId}`, 'GET').then((data: blogDetailRespond) => {
       setData(data)
     })
   }, [archId])
-
-  const HandleSubmitComment = () => {
-    setSubmitting(true)
-    const token = localStorage.getItem('token')
-    fetchData(`${BASEURL}/api/v1/comment/add?archId=${archId}`, 'POST', { token }).finally(() => setSubmitting(false))
-  }
 
   // 解构赋值文章数据
   const { title, createTime, views, content, author } = data
@@ -68,46 +60,19 @@ export default function PageArchives() {
           <div className="body">
             <Markdown children={content} remarkPlugins={[gfm]} components={markdownComponents} />
           </div>
-
           <Divider />
-
           <ArchiveTools archId={archId} author={author} />
         </BlogDetail>
-        <Comment>
-          <div>
-            <span id="title">发表评论</span>
-            <form>
-              <textarea
-                name="comment"
-                id="commentInputArea"
-                placeholder="有疑问或者错误的地方？在此输入您的留言吧！"
-                onChange={(e) => setCommentText(e.target.value)}
-                value={commentText}
-              />
-            </form>
-            <div>
-              <button
-                onClick={() => HandleSubmitComment()}
-                style={{
-                  pointerEvents: submitting ? 'none' : 'unset',
-                  backgroundColor: submitting ? '#2b2d426e' : '#2b2d42',
-                }}
-              >
-                {submitting && <LoadingOutlined style={{ marginRight: '0.5em' }} />}
-                {submitting ? '发送中' : '提交留言'}
-              </button>
-            </div>
-          </div>
-        </Comment>
+        <ArchiveComment archId={archId} />
       </LeftView>
     </>
   )
 }
 
-function ArchiveTools(props: { archId: string; author: string | undefined }) {
+// 工具栏组件
+function ArchiveTools({ archId, author }: { archId: string; author: string | undefined }) {
   // 博客工具栏
   const history = useHistory()
-  const { archId, author } = props
 
   // 拷贝链接到剪贴板
   const copyArchiveLink = () => {
@@ -170,6 +135,57 @@ function ArchiveTools(props: { archId: string; author: string | undefined }) {
         </ul>
       )}
     </div>
+  )
+}
+
+// 评论功能组件
+function ArchiveComment({ archId }: { archId: string }) {
+  const [submitting, setSubmitting] = useState(false)
+  const [commentText, setCommentText] = useState('')
+  const [comments, setComments] = useState([])
+
+  useEffect(() => {
+    fetchData(`${BASEURL}/api/v1/archive/comment?archId=${archId}`, 'GET').then((data) => setComments(data))
+  }, [])
+
+  const HandleSubmitComment = () => {
+    setSubmitting(true)
+    const token = localStorage.getItem('token')
+    fetchData(
+      `${BASEURL}/api/v1/archive/comment?archId=${archId}`,
+      'POST',
+      { token },
+      { comment: commentText }
+    ).finally(() => setSubmitting(false))
+  }
+
+  return (
+    <Comment>
+      <div>
+        <span id="title">发表评论</span>
+        <form>
+          <textarea
+            name="comment"
+            id="commentInputArea"
+            placeholder="有疑问或者错误的地方？在此输入您的留言吧！"
+            onChange={(e) => setCommentText(e.target.value)}
+            value={commentText}
+          />
+        </form>
+        <div>
+          <button
+            onClick={() => HandleSubmitComment()}
+            style={{
+              pointerEvents: submitting ? 'none' : 'unset',
+              backgroundColor: submitting ? '#2b2d426e' : '#2b2d42',
+            }}
+          >
+            {submitting && <LoadingOutlined style={{ marginRight: '0.5em' }} />}
+            {submitting ? '发送中' : '提交留言'}
+          </button>
+        </div>
+      </div>
+    </Comment>
   )
 }
 
@@ -236,6 +252,11 @@ const BlogDetail = styled.div`
     #visited {
       color: ${ThemeColor.gray};
     }
+  }
+
+  div.body {
+    display: flex;
+    flex-direction: column;
   }
 
   div.tools {
