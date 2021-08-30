@@ -49,13 +49,13 @@ export default function PageHome() {
 
   return (
     <>
-      {localStorage.getItem('loggedIn') && localStorage.getItem('email') === '' && (
+      {/* {localStorage.getItem('loggedIn') && localStorage.getItem('email') === '' && (
         <NoticeBar>
           <span>
             您需要验证您的邮箱才可以发布回复、订阅、留言等操作。 <span id="verifyBtn">前往验证</span>
           </span>
         </NoticeBar>
-      )}
+      )} */}
       <ArchivesContianer>
         {role === 10 && (
           <AddArchive onClick={() => history.push('/add', { edit: false })}>

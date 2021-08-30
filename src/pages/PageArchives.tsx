@@ -211,8 +211,9 @@ function ArchiveComment({ archId }: { archId: string }) {
                 <div className="commentText">
                   <span>{comment}</span>
                   {userInfo && (
-                    <div style={{ marginTop: '1em' }}>
-                      <span style={{ color: 'gray' }}>回复评论</span>
+                    <div style={{ marginTop: '1em', color: 'gray' }}>
+                      <span style={{ paddingRight: '1em' }}>回复</span>
+                      {userInfo.role === 10 && <span>删除</span>}
                     </div>
                   )}
                 </div>

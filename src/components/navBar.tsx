@@ -1,8 +1,8 @@
 import { NavLink } from 'react-router-dom'
 import styled from 'styled-components'
 
-import { Avatar } from 'antd'
-import { UserOutlined } from '@ant-design/icons'
+import { Avatar, message } from 'antd'
+import { UserOutlined, LogoutOutlined } from '@ant-design/icons'
 import { useHistory } from 'react-router'
 import { useUserInfo } from '../utils/hooks'
 import { useEffect } from 'react'
@@ -17,7 +17,7 @@ export default function Navbar() {
   useEffect(() => {
     const token = localStorage.getItem('token')
     if (token)
-      fetchData(`${BASEURL}/api/v1/user/userInfo`, 'GET', { token: token }).then(
+      fetchData(`${BASEURL}/api/v1/user/userInfo`, 'GET', { token }).then(
         (userInfoData: userInfoRespond) => localStorage.setItem('userInfo', JSON.stringify(userInfoData)),
         ({ status }) => {
           if (status === 10) {
@@ -27,42 +27,55 @@ export default function Navbar() {
       )
   }, [history])
 
+  const HandleLogout = () => {
+    const token = localStorage.getItem('token')
+    fetchData(`${BASEURL}/api/v1/auth/logout`, 'GET', { token })
+      .then(() => localStorage.clear())
+      .then(() => history.go(0))
+  }
+
   return (
     <>
       <NavContainer>
-        <div>
+        <div id="navBar">
           <div id="siteTittle">
-            <span>我的React博客</span>
+            <span>小翼的档案馆</span>
           </div>
 
           <div id="navList">
             <ul className="disableDefaultListStyle">
               <li>
                 <NavLink to="/" activeClassName="currentPage">
-                  首页
+                  <span>博客</span>
                 </NavLink>
               </li>
               <li>
                 <NavLink to="/" activeClassName="currentPage">
-                  时间轴
+                  <span onClick={() => message.warn('很抱歉！前方依然在施工哦，以后再来吧！')}>时间轴</span>
                 </NavLink>
               </li>
               <li>
                 <NavLink to="/" activeClassName="currentPage">
-                  小工具
+                  <span onClick={() => message.warn('很抱歉！前方依然在施工哦，以后再来吧！')}>小工具</span>
                 </NavLink>
               </li>
               <li>
                 <NavLink to="/" activeClassName="currentPage">
-                  档案馆
+                  <span onClick={() => message.warn('很抱歉！前方依然在施工哦，以后再来吧！')}>关于</span>
                 </NavLink>
               </li>
             </ul>
             <div id="userBlock">
               {userInfo ? (
-                <span>
+                <div className="user-dropdown">
                   <Avatar icon={!userInfo && <UserOutlined />} src={userInfo.avatar} />
-                </span>
+                  <ul className="dropdown-content">
+                    <li onClick={() => HandleLogout()}>
+                      <LogoutOutlined />
+                      <span>退出登录</span>
+                    </li>
+                  </ul>
+                </div>
               ) : (
                 <span id="loginBtn" onClick={() => history.push('/login')}>
                   登录
@@ -83,10 +96,11 @@ const NavContainer = styled.div`
   box-shadow: 1px 0 10px #e7e7e7;
   background-color: #fff;
   position: relative;
-  div {
+  div#navBar {
+    min-height: 64px;
     display: flex;
     margin: 0 16px;
-    min-height: 64px;
+    align-items: center;
     #siteTittle {
       justify-content: center;
       align-items: center;
@@ -97,9 +111,11 @@ const NavContainer = styled.div`
       }
     }
     #navList {
+      display: flex;
       flex: 1;
       align-items: center;
       justify-content: space-between;
+      margin: 0 16px;
       ul {
         flex: 1;
         justify-content: space-evenly;
@@ -121,6 +137,48 @@ const NavContainer = styled.div`
       }
       div#userBlock {
         align-items: center;
+        :hover {
+          cursor: pointer;
+        }
+        :hover div.user-dropdown ul.dropdown-content {
+          max-height: 100px;
+          transition: max-height 0.3s ease-in;
+        }
+
+        div.user-dropdown {
+          ul.dropdown-content {
+            display: flex;
+            position: absolute;
+            background-color: #fff;
+            right: 32px;
+            box-shadow: 0px 0px 16px 4px #f1f1f1;
+            border-radius: 5px;
+            top: 56px;
+            justify-content: flex-end;
+            align-items: center;
+            min-height: inherit;
+            list-style: none;
+            padding: 0;
+            transition: max-height 0.3s ease-out;
+            max-height: 0;
+            overflow: hidden;
+            li {
+              span[role='img'] {
+                margin-right: 8px;
+              }
+              transition: all 0.3s;
+              padding: 6px 24px;
+              margin: 6px 0;
+              /* border-radius: 5px; */
+              :hover {
+                background-color: #f5f5f5;
+                cursor: pointer;
+                color: red;
+              }
+            }
+          }
+        }
+
         span#loginBtn {
           padding: 4px 10px;
           background-color: #f3f3f3;
