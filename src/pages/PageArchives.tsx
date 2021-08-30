@@ -6,6 +6,8 @@ import copyLink from 'copy-to-clipboard'
 import gfm from 'remark-gfm'
 import SyntaxHighlighter from 'react-syntax-highlighter'
 import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs'
+import { LoadingOutlined, QrcodeOutlined, LinkOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
+import { Tooltip, Divider, message, Popconfirm, Avatar } from 'antd'
 
 import { ThemeColor } from '../utils/constent'
 // import Widges from '../components/widges'
@@ -13,11 +15,9 @@ import { ThemeColor } from '../utils/constent'
 import { useState } from 'react'
 import { useEffect } from 'react'
 import fetchData from '../utils/fetch'
-import { blogDetailRespond } from '../utils/interfaces'
+import { blogDetailRespond, commentsDataRespond } from '../utils/interfaces'
 import { BASEURL } from '../config'
-
-import { LoadingOutlined, QrcodeOutlined, LinkOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
-import { Tooltip, Divider, message, Popconfirm } from 'antd'
+import { useUserInfo } from '../utils/hooks'
 
 export default function PageArchives() {
   // 从URL获取文档ID
@@ -27,7 +27,7 @@ export default function PageArchives() {
     createTime: 0,
     updateTime: 0,
     views: 0,
-    author: undefined,
+    author: '',
     content: '',
     coverImage: undefined,
   })
@@ -73,6 +73,7 @@ export default function PageArchives() {
 function ArchiveTools({ archId, author }: { archId: string; author: string | undefined }) {
   // 博客工具栏
   const history = useHistory()
+  const [userInfo] = useUserInfo()
 
   // 拷贝链接到剪贴板
   const copyArchiveLink = () => {
@@ -111,7 +112,7 @@ function ArchiveTools({ archId, author }: { archId: string; author: string | und
           </li>
         </Tooltip>
       </ul>
-      {author === localStorage.getItem('username') && (
+      {author === userInfo?.username && (
         <ul id="AdminTools" className="disableDefaultListStyle">
           <Tooltip placement="top" title="编辑文章">
             <li onClick={() => history.push('/edit', { edit: true, archId })}>
@@ -142,48 +143,84 @@ function ArchiveTools({ archId, author }: { archId: string; author: string | und
 function ArchiveComment({ archId }: { archId: string }) {
   const [submitting, setSubmitting] = useState(false)
   const [commentText, setCommentText] = useState('')
-  const [comments, setComments] = useState([])
+  const [comments, setComments] = useState<Array<commentsDataRespond>>([])
+  const [userInfo] = useUserInfo()
 
   useEffect(() => {
-    fetchData(`${BASEURL}/api/v1/archive/comment?archId=${archId}`, 'GET').then((data) => setComments(data))
-  }, [])
+    fetchData(`${BASEURL}/api/v1/archive/comment?archId=${archId}`, 'GET').then((data: Array<commentsDataRespond>) =>
+      setComments(data)
+    )
+  }, [archId])
 
   const HandleSubmitComment = () => {
     setSubmitting(true)
     const token = localStorage.getItem('token')
-    fetchData(
-      `${BASEURL}/api/v1/archive/comment?archId=${archId}`,
-      'POST',
-      { token },
-      { comment: commentText }
-    ).finally(() => setSubmitting(false))
+    fetchData(`${BASEURL}/api/v1/archive/comment?archId=${archId}`, 'POST', { token }, { comment: commentText })
+      .then(() => {
+        return fetchData(`${BASEURL}/api/v1/archive/comment?archId=${archId}`, 'GET')
+      })
+      .then((data: Array<commentsDataRespond>) => {
+        setComments(data)
+        message.success('评论已成功提交')
+      })
+      .finally(() => setSubmitting(false))
+      .catch((err) => {
+        console.log(err)
+      })
   }
 
   return (
     <Comment>
-      <div>
+      <div id="formBlock">
         <span id="title">发表评论</span>
         <form>
           <textarea
             name="comment"
             id="commentInputArea"
-            placeholder="有疑问或者错误的地方？在此输入您的留言吧！"
+            placeholder={!userInfo ? '您需要登录才可进行留言噢！' : '有疑问或者错误的地方？在此输入您的留言吧！'}
             onChange={(e) => setCommentText(e.target.value)}
             value={commentText}
+            disabled={!userInfo}
           />
         </form>
         <div>
           <button
             onClick={() => HandleSubmitComment()}
-            style={{
-              pointerEvents: submitting ? 'none' : 'unset',
-              backgroundColor: submitting ? '#2b2d426e' : '#2b2d42',
-            }}
+            className={submitting || !userInfo ? 'disabled' : undefined}
+            disabled={!userInfo}
           >
             {submitting && <LoadingOutlined style={{ marginRight: '0.5em' }} />}
             {submitting ? '发送中' : '提交留言'}
           </button>
         </div>
+      </div>
+      <div id="commentsBlock">
+        <Divider>留言板</Divider>
+        {comments.map((value) => {
+          const { id, avatar, comment, nickname, time } = value
+          return (
+            <div className="commentItems" key={id}>
+              <div className="userAvatar">
+                <Avatar src={avatar} size={48} />
+              </div>
+              <div className="commentContent">
+                <div>
+                  <span className="userNickName">{nickname}</span>
+                  <span className="commentTime">{new Date(time).toLocaleString()}</span>
+                </div>
+                <div className="commentText">
+                  <span>{comment}</span>
+                  {userInfo && (
+                    <div style={{ marginTop: '1em' }}>
+                      <span style={{ color: 'gray' }}>回复评论</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <Divider dashed />
+            </div>
+          )
+        })}
       </div>
     </Comment>
   )
@@ -299,11 +336,9 @@ const BlogDetail = styled.div`
 `
 
 const Comment = styled.div`
-  div {
-    background-color: #fff;
-    height: 100%;
-    padding: 1.5em;
-
+  background-color: #fff;
+  padding: 1.5em;
+  div#formBlock {
     #title {
       display: block;
       font-size: 1.25em;
@@ -331,7 +366,6 @@ const Comment = styled.div`
       display: flex;
       justify-content: flex-end;
       padding: 1em;
-
       button {
         border: none;
         background: ${ThemeColor.dark};
@@ -345,6 +379,39 @@ const Comment = styled.div`
         }
         :active {
           background-color: #000;
+        }
+      }
+      button.disabled {
+        background-color: #2b2d426e;
+        pointer-events: none;
+      }
+    }
+  }
+  div#commentsBlock {
+    margin: 1em 0;
+    div.commentItems {
+      display: flex;
+      padding: 1em;
+      flex-wrap: wrap;
+      div.userAvatar {
+        margin-right: 1em;
+      }
+      div.commentContent {
+        display: flex;
+        flex-direction: column;
+        div {
+          span.userNickName {
+            display: block;
+            font-weight: 600;
+            font-size: 1.2em;
+          }
+          span.commentTime {
+            color: #acacac;
+          }
+        }
+        div.commentText {
+          flex: 1 100%;
+          margin-top: 1.25em;
         }
       }
     }

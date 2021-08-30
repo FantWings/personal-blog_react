@@ -7,7 +7,7 @@ import { archivePreviewRespond } from '../utils/interfaces'
 import fetchData from '../utils/fetch'
 import { Link, useHistory } from 'react-router-dom'
 import { BASEURL } from '../config'
-import Widges from '../components/widges'
+// import Widges from '../components/widges'
 import TagGroup from '../components/tagGroup'
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
 
@@ -15,7 +15,7 @@ export default function PageHome() {
   const history = useHistory()
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState([])
-  const [tags, setTags] = useState([])
+  // const [tags, setTags] = useState([])
   const [role, setRole] = useState(0)
 
   useEffect(() => {
@@ -253,18 +253,18 @@ const Loadmore = styled.div`
   }
 `
 
-const WidgesContainer = styled.div`
-  display: flex;
-  flex: 1;
-  min-width: 260px;
-  @media all and (min-width: 769px) {
-    order: 30;
-    margin-left: 10px;
-    flex: 0.3;
-  }
+// const WidgesContainer = styled.div`
+//   display: flex;
+//   flex: 1;
+//   min-width: 260px;
+//   @media all and (min-width: 769px) {
+//     order: 30;
+//     margin-left: 10px;
+//     flex: 0.3;
+//   }
 
-  @media all and (max-width: 768px) {
-    order: 11;
-    margin-bottom: 1em;
-  }
-`
+//   @media all and (max-width: 768px) {
+//     order: 11;
+//     margin-bottom: 1em;
+//   }
+// `

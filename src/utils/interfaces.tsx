@@ -17,21 +17,30 @@ export interface archivePreviewRespond {
 }
 
 export interface blogDetailRespond {
-  title: string | undefined
+  title: string
   views: number
-  author: string | undefined
+  author: string
   updateTime: number
   createTime: number
   content: string
-  coverImage: string | undefined
+  coverImage?: string
 }
 
 export interface userInfoRespond {
-  avatar?: string
+  avatar: string
   email: { addr: string; verifyed: number }
   phone?: number
   qq?: number
   username: string
   uuid: string
   role: number
+}
+
+export interface commentsDataRespond {
+  id: number
+  avatar: string
+  comment: string
+  email: string
+  nickname: string
+  time: number
 }

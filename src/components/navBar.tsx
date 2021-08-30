@@ -3,73 +3,79 @@ import styled from 'styled-components'
 
 import { Avatar } from 'antd'
 import { UserOutlined } from '@ant-design/icons'
-import { useEffect, useState } from 'react'
 import { useHistory } from 'react-router'
+import { useUserInfo } from '../utils/hooks'
+import { useEffect } from 'react'
 import fetchData from '../utils/fetch'
 import { BASEURL } from '../config'
+import { userInfoRespond } from '../utils/interfaces'
 
 export default function Navbar() {
   const history = useHistory()
-  const token = localStorage.getItem('token')
-  const [loggedIn, setLoggedIn] = useState(false)
-  const [avatar, setAvatar] = useState('')
+  const [userInfo] = useUserInfo()
 
   useEffect(() => {
-    fetchData(`${BASEURL}/api/v1/user/userInfo`, 'GET', { token }).then(
-      ({ avatar }) => {
-        setAvatar(avatar)
-        setLoggedIn(true)
-      },
-      ({ status }) => {
-        if (status === 10) setLoggedIn(false)
-      }
-    )
-  }, [token])
+    const token = localStorage.getItem('token')
+    if (token)
+      fetchData(`${BASEURL}/api/v1/user/userInfo`, 'GET', { token: token }).then(
+        (userInfoData: userInfoRespond) => localStorage.setItem('userInfo', JSON.stringify(userInfoData)),
+        ({ status }) => {
+          if (status === 10) {
+            history.push('/login')
+          }
+        }
+      )
+  }, [history])
 
   return (
-    <NavContainer>
-      <div>
-        <div id="siteTittle">
-          <span>我的React博客</span>
-        </div>
+    <>
+      <NavContainer>
+        <div>
+          <div id="siteTittle">
+            <span>我的React博客</span>
+          </div>
 
-        <div id="navList">
-          <ul className="disableDefaultListStyle">
-            <li>
-              <NavLink to="/" activeClassName="currentPage">
-                首页
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/" activeClassName="currentPage">
-                时间轴
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/" activeClassName="currentPage">
-                小工具
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/" activeClassName="currentPage">
-                档案馆
-              </NavLink>
-            </li>
-          </ul>
-          <div id="userBlock">
-            {loggedIn ? (
-              <span onClick={() => history.push('/profile')}>
-                <Avatar icon={!avatar && <UserOutlined />} src={avatar} />
-              </span>
-            ) : (
-              <span id="loginBtn" onClick={() => history.push('/login')}>
-                登录
-              </span>
-            )}
+          <div id="navList">
+            <ul className="disableDefaultListStyle">
+              <li>
+                <NavLink to="/" activeClassName="currentPage">
+                  首页
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/" activeClassName="currentPage">
+                  时间轴
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/" activeClassName="currentPage">
+                  小工具
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/" activeClassName="currentPage">
+                  档案馆
+                </NavLink>
+              </li>
+            </ul>
+            <div id="userBlock">
+              {userInfo ? (
+                <span>
+                  <Avatar icon={!userInfo && <UserOutlined />} src={userInfo.avatar} />
+                </span>
+              ) : (
+                <span id="loginBtn" onClick={() => history.push('/login')}>
+                  登录
+                </span>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    </NavContainer>
+      </NavContainer>
+      {/* <Tooltip>
+        <span>233</span>
+      </Tooltip> */}
+    </>
   )
 }
 

@@ -63,7 +63,7 @@ function LoginForm() {
         // 登录成功，获取用户信息
         return fetchData(`${BASEURL}/api/v1/user/userInfo`, 'GET', { token: token })
       })
-      .then((userInfoData: userInfoRespond) => doLogin(userInfoData))
+      .then((userInfoData: userInfoRespond) => localStorage.setItem('userInfo', JSON.stringify(userInfoData)))
       .then(() => history.goBack())
       .finally(() => {
         setLoading(false)
