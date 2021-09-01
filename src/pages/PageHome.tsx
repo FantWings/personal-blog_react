@@ -10,19 +10,22 @@ import { BASEURL } from '../config'
 // import Widges from '../components/widges'
 import TagGroup from '../components/tagGroup'
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
+import { useUserInfo } from '../utils/hooks'
 
 export default function PageHome() {
   const history = useHistory()
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState([])
   // const [tags, setTags] = useState([])
-  const [role, setRole] = useState(0)
+  // const [role, setRole] = useState(0)
 
-  useEffect(() => {
-    fetchData(`${BASEURL}/api/v1/user/getRole`, 'GET', { token: localStorage.getItem('token') }).then(
-      ({ data: role }) => setRole(role)
-    )
-  }, [])
+  // useEffect(() => {
+  //   fetchData(`${BASEURL}/api/v1/user/getRole`, 'GET', { token: localStorage.getItem('token') }).then(
+  //     ({ data: role }) => setRole(role)
+  //   )
+  // }, [])
+
+  const [userInfo] = useUserInfo()
 
   useEffect(() => {
     setLoading(true)
@@ -57,7 +60,7 @@ export default function PageHome() {
         </NoticeBar>
       )} */}
       <ArchivesContianer>
-        {role === 10 && (
+        {userInfo?.role === 10 && (
           <AddArchive onClick={() => history.push('/add', { edit: false })}>
             <PlusOutlined />
             <span>撰写新文章</span>
