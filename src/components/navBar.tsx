@@ -5,27 +5,12 @@ import { Avatar, message } from 'antd'
 import { UserOutlined, LogoutOutlined } from '@ant-design/icons'
 import { useHistory } from 'react-router'
 import { useUserInfo } from '../utils/hooks'
-import { useEffect } from 'react'
 import fetchData from '../utils/fetch'
 import { BASEURL } from '../config'
-import { userInfoRespond } from '../utils/interfaces'
 
 export default function Navbar() {
   const history = useHistory()
   const [userInfo] = useUserInfo()
-
-  useEffect(() => {
-    const token = localStorage.getItem('token')
-    if (token)
-      fetchData(`${BASEURL}/api/v1/user/userInfo`, 'GET', { token }).then(
-        (userInfoData: userInfoRespond) => localStorage.setItem('userInfo', JSON.stringify(userInfoData)),
-        ({ status }) => {
-          if (status === 10) {
-            history.push('/login')
-          }
-        }
-      )
-  }, [history])
 
   const HandleLogout = () => {
     const token = localStorage.getItem('token')
@@ -85,9 +70,6 @@ export default function Navbar() {
           </div>
         </div>
       </NavContainer>
-      {/* <Tooltip>
-        <span>233</span>
-      </Tooltip> */}
     </>
   )
 }
