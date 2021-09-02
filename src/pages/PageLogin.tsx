@@ -76,15 +76,12 @@ function LoginForm() {
 
   const HandleGetAvatar = () => {
     if (username) {
-      fetchData(`${BASEURL}/api/v1/user/avatar?username=${username}`, 'GET').then(
-        ({ avatar, nickname }) => {
+      fetchData(`${BASEURL}/api/v1/user/avatar?username=${username}`, 'GET')
+        .then(({ avatar, nickname }) => {
           setAvatar(avatar)
           setNickname(nickname)
-        },
-        (reason) => {
-          console.log(reason)
-        }
-      )
+        })
+        .catch(() => {})
     } else {
       setAvatar('')
     }
@@ -92,7 +89,7 @@ function LoginForm() {
 
   return (
     <CustomForm>
-      {nickname ? (
+      {nickname && username ? (
         <div id="avatar">
           <Avatar src={avatar} size={48} />
           <span>{nickname}，欢迎回来！</span>
