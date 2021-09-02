@@ -45,6 +45,7 @@ function LoginForm() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [avatar, setAvatar] = useState('')
+  const [nickname, setNickname] = useState('')
   const [loading, setLoading] = useState(false)
   const history = useHistory()
 
@@ -76,7 +77,10 @@ function LoginForm() {
   const HandleGetAvatar = () => {
     if (username) {
       fetchData(`${BASEURL}/api/v1/user/avatar?username=${username}`, 'GET').then(
-        ({ data }) => setAvatar(data),
+        ({ avatar, nickname }) => {
+          setAvatar(avatar)
+          setNickname(nickname)
+        },
         (reason) => {
           console.log(reason)
         }
@@ -88,10 +92,10 @@ function LoginForm() {
 
   return (
     <CustomForm>
-      {avatar ? (
+      {nickname ? (
         <div id="avatar">
           <Avatar src={avatar} size={48} />
-          <span>欢迎回来！{username}</span>
+          <span>{nickname}，欢迎回来！</span>
         </div>
       ) : (
         <h2>使用账号密码登录</h2>
@@ -440,6 +444,7 @@ const CustomForm = styled.form`
       justify-content: flex-end;
       transition: all 0.3s;
       color: #848484;
+      margin-top: 0.25em;
       :hover {
         cursor: pointer;
         color: #333;
