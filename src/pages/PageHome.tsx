@@ -66,35 +66,37 @@ export default function PageHome() {
             <span>撰写新文章</span>
           </AddArchive>
         )}
-        {data.map(({ id, image, title, preview, views, time_for_read, update_time, tag }: archivePreviewRespond) => {
-          return (
-            <ArchivesPreview key={id}>
-              <div className="body">
-                <div className="image">
-                  <span
-                    style={{
-                      backgroundImage: `url(${image})`,
-                    }}
-                  />
+        {data.map(
+          ({ id, cover_image, title, preview, views, time_for_read, update_time, tag }: archivePreviewRespond) => {
+            return (
+              <ArchivesPreview key={id}>
+                <div className="body">
+                  <div className="image">
+                    <span
+                      style={{
+                        backgroundImage: `url(${cover_image || 'thumbnail.png'})`,
+                      }}
+                    />
+                  </div>
+                  <div className="content">
+                    <Link className="title" to={`/archives/${id}`}>
+                      {title}
+                    </Link>
+                    <span className="text">{preview}</span>
+                  </div>
                 </div>
-                <div className="content">
-                  <Link className="title" to={`/archives/${id}`}>
-                    {title}
-                  </Link>
-                  <span className="text">{preview}</span>
+                <div className="footer">
+                  <ul className="info disableDefaultListStyle">
+                    <li>阅读量：{views}</li>
+                    <li>阅读时间：{time_for_read}分钟</li>
+                    <li>最后更新：{new Date(update_time).toLocaleString()}</li>
+                  </ul>
+                  <TagGroup tags={tag} handleUpdate={filterByTags} />
                 </div>
-              </div>
-              <div className="footer">
-                <ul className="info disableDefaultListStyle">
-                  <li>阅读量：{views}</li>
-                  <li>阅读时间：{time_for_read}分钟</li>
-                  <li>最后更新：{new Date(update_time).toLocaleString()}</li>
-                </ul>
-                <TagGroup tags={tag} handleUpdate={filterByTags} />
-              </div>
-            </ArchivesPreview>
-          )
-        })}
+              </ArchivesPreview>
+            )
+          }
+        )}
         <Loadmore style={{ cursor: loading ? 'wait' : 'pointer' }} onClick={() => setLoading(!loading)}>
           {loading ? <LoadingOutlined /> : '加载更多'}
         </Loadmore>
@@ -169,6 +171,9 @@ const ArchivesPreview = styled.div`
     flex-wrap: wrap;
     margin-bottom: 0.8em;
     .image {
+      @media all and (max-width: 768px) {
+        display: none;
+      }
       background-size: cover;
       border-radius: 0.15rem;
       overflow: hidden;
@@ -194,7 +199,7 @@ const ArchivesPreview = styled.div`
       flex-wrap: wrap;
       padding: 0 1rem;
       flex: 1;
-      .title {
+      a.title {
         display: block;
         margin-bottom: 0.25em;
         font-weight: 600;
@@ -207,15 +212,13 @@ const ArchivesPreview = styled.div`
           cursor: pointer;
         }
       }
-      .text {
+      span.text {
         font-size: 0.85rem;
         color: ${ThemeColor.gray};
-        @media all and (max-width: 768px) {
-          display: -webkit-box;
-          -webkit-box-orient: vertical;
-          -webkit-line-clamp: 3;
-          overflow: hidden;
-        }
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+        overflow: hidden;
+        display: -webkit-box;
       }
     }
   }

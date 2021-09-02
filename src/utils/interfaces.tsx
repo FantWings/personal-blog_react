@@ -11,7 +11,7 @@ export interface archivePreviewRespond {
   update_time: number
   views: number
   comment: number
-  image: string
+  cover_image: string
   tag: Array<string>
   time_for_read: number
 }
