@@ -104,7 +104,7 @@ function LoginForm() {
               name="username"
               id="username"
               value={username}
-              placeholder="用户名或邮箱"
+              placeholder="邮箱"
               onChange={(e) => setUsername(e.target.value)}
               onBlur={() => HandleGetAvatar()}
             />
@@ -135,10 +135,10 @@ function LoginForm() {
 }
 
 function RegisterFrom() {
-  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [verifyPassword, setVerifyPassword] = useState('')
-  const [email, setEmail] = useState('')
+  const [nickname, setNickName] = useState('')
   const [helloText, setHelloText] = useState('让我们开始吧！')
   const [describeText, setDescribeText] = useState('设置一个用户名')
   const [showDescribe, setShowDescribe] = useState(false)
@@ -153,9 +153,9 @@ function RegisterFrom() {
     setButtom('正在请求')
     // 执行注册操作
     fetchData(`${BASEURL}/api/v1/auth/register`, 'POST', undefined, {
-      username,
-      password,
+      nickname,
       email,
+      password,
     })
       .then(({ token }) => {
         // 注册成功，将token写入localStorge
@@ -187,23 +187,27 @@ function RegisterFrom() {
   //   )
   // }
 
-  const checkUsername = () => {
+  const checkNickname = () => {
     // 剔除用户名的标点符号
-    setUsername(username.replace(/[^a-zA-Z0-9\u4E00-\u9FA5]/g, ''))
+    setEmail(email.replace(/[^a-zA-Z0-9\u4E00-\u9FA5]/g, ''))
   }
 
   const checkEveryThing = () => {
-    if (username.length === 0) {
-      setHelloText('至少需要告知我用户名哦')
+    if (nickname.length === 0) {
+      setHelloText('至少需要告知您的昵称哦')
       setShowDescribe(false)
       return setCheckPass(false)
     }
 
-    setHelloText(`${username}，你好呀！`)
+    setHelloText(`${nickname}，你好呀！`)
     setShowDescribe(true)
 
     if (password.length === 0) {
       setDescribeText('接下来，设置一个高强度的密码吧！')
+      return setCheckPass(false)
+    }
+    if (password.length <= 8) {
+      setDescribeText('密码长度不可低于8位！')
       return setCheckPass(false)
     }
     if (password !== verifyPassword) {
@@ -255,16 +259,16 @@ function RegisterFrom() {
           <div className="input-row">
             <input
               type="text"
-              name="username"
-              id="username"
-              value={username}
-              placeholder="用户名（支持中文，最长16位）"
+              name="nickname"
+              id="nickname"
+              value={nickname}
+              placeholder="昵称（支持中文，最长16位）"
               maxLength={16}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => setNickName(e.target.value)}
               onBlur={() => checkEveryThing()}
-              onKeyUp={() => checkUsername()}
-              onPaste={() => checkUsername()}
-              onContextMenu={() => checkUsername()}
+              onKeyUp={() => checkNickname()}
+              onPaste={() => checkNickname()}
+              onContextMenu={() => checkNickname()}
             />
           </div>
         </div>
@@ -305,7 +309,7 @@ function RegisterFrom() {
               name="email"
               id="email"
               value={email}
-              placeholder="绑定邮箱"
+              placeholder="登录邮箱"
               onChange={(e) => setEmail(e.target.value)}
               onKeyUp={() => checkEveryThing()}
             />
