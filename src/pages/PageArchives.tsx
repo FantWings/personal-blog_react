@@ -31,7 +31,6 @@ export default function PageArchives() {
     content: '',
     coverImage: undefined,
   })
-  // const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     fetchData(`${BASEURL}/api/v1/archive/getDetail/${archId}`, 'GET').then((data: blogDetailRespond) => {
@@ -162,6 +161,7 @@ function ArchiveComment({ archId }: { archId: string }) {
       .then((data: Array<commentsDataRespond>) => {
         setComments(data)
         message.success('评论已成功提交')
+        setCommentText('')
       })
       .finally(() => setSubmitting(false))
       .catch((err) => {
