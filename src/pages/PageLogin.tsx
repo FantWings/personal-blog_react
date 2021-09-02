@@ -163,24 +163,13 @@ function RegisterFrom() {
         // 注册成功，获取用户信息
         return fetchData(`${BASEURL}/api/v1/user/userInfo`, 'GET', { token })
       })
-      .then((userInfoData: userInfoRespond) => {
-        doLogin(userInfoData)
-        // 登录成功，获取邮箱验证吗
-        // return fetchData(`${BASEURL}/api/v1/auth/2fa/sendVerifyCode?method=email&value=${email}`, 'GET', {
-        //   token: localStorage.getItem('token'),
-        // })
-      })
-      // .then(() => {
-      //   setVerifyStage(true)
-      //   setHelloText('验证您的邮箱')
-      //   setDescribeText(`已向${email}发送了一封邮件验证码`)
-      // })
+      .then((userInfoData: userInfoRespond) => localStorage.setItem('userInfo', JSON.stringify(userInfoData)))
       .then(() => history.push('/'))
       .finally(() => {
-        setButtom('再试一次')
         setLoading(false)
       })
       .catch((e) => {
+        setButtom('再试一次')
         console.log(e)
       })
   }
@@ -335,16 +324,6 @@ function RegisterFrom() {
       </button>
     </CustomForm>
   )
-}
-
-function doLogin(userInfoData: userInfoRespond) {
-  // 添加登录标
-  localStorage.setItem('loggedIn', 'true')
-  // 将获取到的用户信息写入LocalStorge
-  localStorage.setItem('username', userInfoData.username)
-  localStorage.setItem('email', userInfoData.email.verifyed ? userInfoData.email.addr : '')
-  localStorage.setItem('uuid', userInfoData.uuid)
-  localStorage.setItem('avatar', userInfoData.avatar || '')
 }
 
 const PageContainer = styled.div`
