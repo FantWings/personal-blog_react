@@ -108,22 +108,22 @@ export default function PageHome() {
   )
 }
 
-const NoticeBar = styled.div`
-  flex: 1 100%;
-  padding: 0.75em;
-  margin-bottom: 0.75em;
-  background-color: #fff2cf;
-  color: #d8b550;
-  order: 10;
-  span#verifyBtn {
-    color: #909eff;
-    transition: all 0.3s;
-    :hover {
-      color: #7c8efd;
-      cursor: pointer;
-    }
-  }
-`
+// const NoticeBar = styled.div`
+//   flex: 1 100%;
+//   padding: 0.75em;
+//   margin-bottom: 0.75em;
+//   background-color: #fff2cf;
+//   color: #d8b550;
+//   order: 10;
+//   span#verifyBtn {
+//     color: #909eff;
+//     transition: all 0.3s;
+//     :hover {
+//       color: #7c8efd;
+//       cursor: pointer;
+//     }
+//   }
+// `
 
 const ArchivesContianer = styled.div`
   order: 20;
