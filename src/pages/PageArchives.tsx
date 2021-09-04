@@ -12,8 +12,7 @@ import { Tooltip, Divider, message, Popconfirm, Avatar } from 'antd'
 import { ThemeColor } from '../utils/constent'
 // import Widges from '../components/widges'
 // import IconButton from '../components/iconButton'
-import { useState } from 'react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import fetchData from '../utils/fetch'
 import { blogDetailRespond, commentsDataRespond } from '../utils/interfaces'
 import { BASEURL } from '../config'
@@ -154,6 +153,9 @@ function ArchiveComment({ archId }: { archId: string }) {
 
   const HandleSubmitComment = () => {
     setSubmitting(true)
+    if (!commentText) {
+      return message.warn('评论不可为空')
+    }
     const token = localStorage.getItem('token')
     fetchData(`${BASEURL}/api/v1/archive/comment?archId=${archId}`, 'POST', { token }, { comment: commentText })
       .then(() => {
@@ -165,9 +167,18 @@ function ArchiveComment({ archId }: { archId: string }) {
         setCommentText('')
       })
       .finally(() => setSubmitting(false))
-      .catch((err) => {
-        console.log(err)
+      .catch((err) => console.log(err))
+  }
+
+  const handleDeleteComment = (comment_id: number) => {
+    const token = localStorage.getItem('token')
+    fetchData(`${BASEURL}/api/v1/archive/comment?comment_id=${comment_id}`, 'DELETE', { token })
+      .then(() => {
+        message.success('操作成功')
+        return fetchData(`${BASEURL}/api/v1/archive/comment?archId=${archId}`, 'GET')
       })
+      .then((data: Array<commentsDataRespond>) => setComments(data))
+      .catch((err) => console.log(err))
   }
 
   return (
@@ -199,7 +210,7 @@ function ArchiveComment({ archId }: { archId: string }) {
         <Divider>留言板</Divider>
         {comments.length === 0 && <span id="noneComments">还没有留言</span>}
         {comments.map((value) => {
-          const { id, avatar, comment, nickname, time } = value
+          const { id, avatar, comment, nickname, time, owner } = value
           return (
             <div className="commentItems" key={id}>
               <div className="userAvatar">
@@ -213,9 +224,13 @@ function ArchiveComment({ archId }: { archId: string }) {
                 <div className="commentText">
                   <span>{comment}</span>
                   {userInfo && (
-                    <div style={{ marginTop: '1em', color: 'gray' }}>
-                      <span style={{ paddingRight: '1em' }}>回复</span>
-                      {userInfo.role === 10 && <span>删除</span>}
+                    <div className="comment_control">
+                      <span className="textBtn">回复</span>
+                      {(userInfo.role === 10 || userInfo.uuid === owner) && (
+                        <span className="textBtn" onClick={() => handleDeleteComment(id)}>
+                          删除
+                        </span>
+                      )}
                     </div>
                   )}
                 </div>
@@ -424,6 +439,10 @@ const Comment = styled.div`
         div.commentText {
           flex: 1 100%;
           margin-top: 1.25em;
+          div.comment_control {
+            margin-top: 1em;
+            color: gray;
+          }
         }
       }
     }

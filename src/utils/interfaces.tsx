@@ -39,6 +39,7 @@ export interface userInfoRespond {
 
 export interface commentsDataRespond {
   id: number
+  owner: string
   avatar: string
   comment: string
   email: string

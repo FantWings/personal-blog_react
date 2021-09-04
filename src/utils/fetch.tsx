@@ -1,7 +1,7 @@
 import { message, notification } from 'antd'
 import { standerdResponse } from './interfaces'
 
-const fetchData = (url: string, method: 'GET' | 'POST' | 'PUT', headers?: object, body?: object) => {
+const fetchData = (url: string, method: 'GET' | 'POST' | 'PUT' | 'DELETE', headers?: object, body?: object) => {
   return fetch(url, {
     method: method || 'GET',
     headers: method === 'GET' ? { ...headers } : { ...headers, 'Content-Type': 'application/json' },
