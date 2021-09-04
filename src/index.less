@@ -1,21 +1,26 @@
 div#root {
   height: 100%;
 }
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro SC', 'SF Pro Text', 'SF Pro Icons', PingFang SC, Lantinghei SC, Microsoft Yahei, Hiragino Sans GB, Microsoft Sans Serif, WenQuanYi Micro Hei, sans-serif, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro SC', 'SF Pro Text', 'SF Pro Icons', PingFang SC, Lantinghei SC,
+    Microsoft Yahei, Hiragino Sans GB, Microsoft Sans Serif, WenQuanYi Micro Hei, sans-serif, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #f5f5f7;
 }
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
+
 /* @media all and (min-width: 768px) {
     .PageContainer {
       padding: 32px;
     }
   } */
+
 .disableDefaultListStyle {
   list-style: none;
   display: flex;
@@ -23,21 +28,25 @@ code {
   margin: 0;
   flex-wrap: wrap;
 }
+
 /* 单行超出省略CSS */
 .textHidden-singleLine-if-overflow {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
 /* 通用配置 */
+
 .flex {
   display: flex;
 }
+
 span.textBtn {
   color: #4a6ee0;
   margin-right: 1.5em;
-}
-span.textBtn:hover {
-  cursor: pointer;
-  color: #6495ff;
+  &:hover {
+    cursor: pointer;
+    color: rgb(100, 149, 255);
+  }
 }
