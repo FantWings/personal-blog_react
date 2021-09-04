@@ -173,7 +173,7 @@ function ArchiveComment({ archId }: { archId: string }) {
   return (
     <Comment>
       <div id="formBlock">
-        <span id="title">发表评论</span>
+        <span id="title">发表留言</span>
         <form>
           <textarea
             name="comment"
@@ -197,6 +197,7 @@ function ArchiveComment({ archId }: { archId: string }) {
       </div>
       <div id="commentsBlock">
         <Divider>留言板</Divider>
+        {comments.length === 0 && <span id="noneComments">还没有留言</span>}
         {comments.map((value) => {
           const { id, avatar, comment, nickname, time } = value
           return (
@@ -391,6 +392,15 @@ const Comment = styled.div`
   }
   div#commentsBlock {
     margin: 1em 0;
+
+    #noneComments {
+      text-align: center;
+      display: block;
+      font-size: 1.5em;
+      margin: 2em 0;
+      color: #e2e2e2;
+    }
+
     div.commentItems {
       display: flex;
       padding: 1em;

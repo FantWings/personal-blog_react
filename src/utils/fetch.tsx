@@ -46,6 +46,9 @@ const fetchData = (url: string, method: 'GET' | 'POST' | 'PUT', headers?: object
           case 2:
             msg && message.warn({ content: msg, key: 'warnMsg' })
             return Promise.reject({ status, msg })
+          case 5:
+            notification.error({ message: '后端错误', description: msg, closeIcon: true })
+            return Promise.reject({ status, msg })
           case 10:
             localStorage.clear()
             message.warn({ content: '登录状态失效，请重新登录', key: 'loginRequiredMsg' })
