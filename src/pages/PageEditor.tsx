@@ -29,9 +29,11 @@ export default function PageEditer() {
   useEffect(() => {
     edit &&
       fetchData(`${BASEURL}/api/v1/archive/getDetail/${archId}`, 'GET')
-        .then(({ content, title }: blogDetailRespond) => {
+        .then(({ content, title, coverImage, tags }: blogDetailRespond) => {
           setContent(content)
           setTitle(title)
+          setCoverImage(coverImage)
+          setTags(tags)
         })
         .catch(({ status }) => {
           if (status === 10) return history.push('/login')

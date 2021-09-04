@@ -23,8 +23,9 @@ export interface blogDetailRespond {
   updateTime: number
   createTime: number
   content: string
-  coverImage?: string
+  coverImage: string
   author_uuid: string
+  tags: Array<string>
 }
 
 export interface userInfoRespond {

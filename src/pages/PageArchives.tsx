@@ -28,8 +28,9 @@ export default function PageArchives() {
     views: 0,
     author: '',
     content: '',
-    coverImage: undefined,
+    coverImage: '',
     author_uuid: '',
+    tags: [],
   })
 
   useEffect(() => {
