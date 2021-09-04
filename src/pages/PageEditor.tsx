@@ -215,6 +215,14 @@ const EditContainer = styled.div`
         padding: 3px 10px;
         border-radius: 3px;
         margin-top: 6px;
+        transition: all 0.3s;
+        :hover {
+          transform: scale(1.1);
+          background-color: #cccccc;
+        }
+        :active {
+          transform: scale(1.05);
+        }
         span {
           margin-left: 6px;
           :hover {

@@ -30,6 +30,7 @@ export default function PageArchives() {
     author: '',
     content: '',
     coverImage: undefined,
+    author_uuid: '',
   })
 
   useEffect(() => {
@@ -39,7 +40,7 @@ export default function PageArchives() {
   }, [archId])
 
   // 解构赋值文章数据
-  const { title, createTime, views, content, author } = data
+  const { title, createTime, views, content, author_uuid } = data
   return (
     <>
       <LeftView>
@@ -60,7 +61,7 @@ export default function PageArchives() {
             <Markdown children={content} remarkPlugins={[gfm]} components={markdownComponents} />
           </div>
           <Divider />
-          <ArchiveTools archId={archId} author={author} />
+          <ArchiveTools archId={archId} author_uuid={author_uuid} />
         </BlogDetail>
         <ArchiveComment archId={archId} />
       </LeftView>
@@ -69,7 +70,7 @@ export default function PageArchives() {
 }
 
 // 工具栏组件
-function ArchiveTools({ archId, author }: { archId: string; author: string | undefined }) {
+function ArchiveTools({ archId, author_uuid }: { archId: string; author_uuid: string | undefined }) {
   // 博客工具栏
   const history = useHistory()
   const [userInfo] = useUserInfo()
@@ -111,7 +112,7 @@ function ArchiveTools({ archId, author }: { archId: string; author: string | und
           </li>
         </Tooltip>
       </ul>
-      {author === userInfo?.username && (
+      {author_uuid === userInfo?.uuid && (
         <ul id="AdminTools" className="disableDefaultListStyle">
           <Tooltip placement="top" title="编辑文章">
             <li onClick={() => history.push('/edit', { edit: true, archId })}>

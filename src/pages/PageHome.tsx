@@ -67,7 +67,7 @@ export default function PageHome() {
           </AddArchive>
         )}
         {data.map(
-          ({ id, cover_image, title, preview, views, time_for_read, update_time, tag }: archivePreviewRespond) => {
+          ({ id, cover_image, title, preview, views, time_for_read, update_time, tags }: archivePreviewRespond) => {
             return (
               <ArchivesPreview key={id}>
                 <div className="body">
@@ -91,7 +91,7 @@ export default function PageHome() {
                     <li>阅读时间：{time_for_read}分钟</li>
                     <li>最后更新：{new Date(update_time).toLocaleString()}</li>
                   </ul>
-                  <TagGroup tags={tag} handleUpdate={filterByTags} />
+                  <TagGroup tags={tags} handleUpdate={filterByTags} />
                 </div>
               </ArchivesPreview>
             )
@@ -233,7 +233,9 @@ const ArchivesPreview = styled.div`
     @media all and (max-width: 768px) {
       flex-direction: column;
       align-items: end;
-      height: 48px;
+      ul.tags {
+        margin-top: 0.75em;
+      }
     }
     .info {
       li {

@@ -12,7 +12,7 @@ export interface archivePreviewRespond {
   views: number
   comment: number
   cover_image: string
-  tag: Array<string>
+  tags: Array<string>
   time_for_read: number
 }
 
@@ -24,6 +24,7 @@ export interface blogDetailRespond {
   createTime: number
   content: string
   coverImage?: string
+  author_uuid: string
 }
 
 export interface userInfoRespond {
@@ -31,7 +32,7 @@ export interface userInfoRespond {
   email: { addr: string; verifyed: number }
   phone?: number
   qq?: number
-  username: string
+  nickname: string
   uuid: string
   role: number
 }

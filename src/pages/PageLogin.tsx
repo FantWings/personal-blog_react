@@ -188,13 +188,8 @@ function RegisterFrom() {
   //   )
   // }
 
-  const checkNickname = () => {
-    // 剔除用户名的标点符号
-    setEmail(email.replace(/[^a-zA-Z0-9\u4E00-\u9FA5]/g, ''))
-  }
-
-  const checkEveryThing = () => {
-    if (nickname.length === 0) {
+  const formCheck = () => {
+    if (!nickname.length) {
       setHelloText('至少需要告知您的昵称哦')
       setShowDescribe(false)
       return setCheckPass(false)
@@ -203,11 +198,14 @@ function RegisterFrom() {
     setHelloText(`${nickname}，你好呀！`)
     setShowDescribe(true)
 
-    if (password.length === 0) {
-      setDescribeText('接下来，设置一个高强度的密码吧！')
+    if (!email) return setDescribeText('设置一个用于登录的邮箱')
+    if (!email.includes('@') || !email.includes('.')) {
+      setDescribeText('哎呀，邮箱格式不对！再检查一下！')
       return setCheckPass(false)
     }
-    if (password.length <= 8) {
+
+    if (!password) return setDescribeText('接下来设置一个高强度密码吧！')
+    if (password.length < 8) {
       setDescribeText('密码长度不可低于8位！')
       return setCheckPass(false)
     }
@@ -215,18 +213,7 @@ function RegisterFrom() {
       setDescribeText('哎呀，两次密码不对哦！')
       return setCheckPass(false)
     }
-    if (email.length <= 5) {
-      setDescribeText('请输入您的邮箱，用于绑定和找回密码')
-      return setCheckPass(false)
-    }
-    if (!email.includes('@')) {
-      setDescribeText('哎呀，邮箱格式不对！应该含有@符号！')
-      return setCheckPass(false)
-    }
-    if (!email.includes('.')) {
-      setDescribeText('哎呀，邮箱格式不对！应该含有”.“符号！')
-      return setCheckPass(false)
-    }
+
     setDescribeText('非常好！您现在可以点击“创建账号”了！')
     setCheckPass(true)
   }
@@ -263,43 +250,13 @@ function RegisterFrom() {
               name="nickname"
               id="nickname"
               value={nickname}
-              placeholder="昵称（支持中文，最长16位）"
+              placeholder="昵称（支持中文）"
               maxLength={16}
               onChange={(e) => setNickName(e.target.value)}
-              onBlur={() => checkEveryThing()}
-              onKeyUp={() => checkNickname()}
-              onPaste={() => checkNickname()}
-              onContextMenu={() => checkNickname()}
-            />
-          </div>
-        </div>
-        <div className="form-block">
-          <div className="input-row">
-            <input
-              type="password"
-              name="password"
-              id="password"
-              placeholder="密码"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              onBlur={() => {
-                setDescribeText('请再输入一次您的密码以确认无误！')
-              }}
-            />
-          </div>
-        </div>
-        <div className="form-block">
-          <div className="input-row">
-            <input
-              type="password"
-              name="confirmPassword"
-              id="confirmPassword"
-              placeholder="确认密码"
-              value={verifyPassword}
-              onChange={(e) => setVerifyPassword(e.target.value)}
-              onBlur={() => {
-                checkEveryThing()
-              }}
+              onBlur={() => formCheck()}
+              onKeyUp={() => setNickName(nickname.replace(/[^a-zA-Z0-9\u4E00-\u9FA5]/g, ''))}
+              onPaste={() => setNickName(nickname.replace(/[^a-zA-Z0-9\u4E00-\u9FA5]/g, ''))}
+              onContextMenu={() => setNickName(nickname.replace(/[^a-zA-Z0-9\u4E00-\u9FA5]/g, ''))}
             />
           </div>
         </div>
@@ -312,7 +269,33 @@ function RegisterFrom() {
               value={email}
               placeholder="登录邮箱"
               onChange={(e) => setEmail(e.target.value)}
-              onKeyUp={() => checkEveryThing()}
+              onBlur={() => formCheck()}
+            />
+          </div>
+        </div>
+        <div className="form-block">
+          <div className="input-row">
+            <input
+              type="password"
+              name="password"
+              id="password"
+              placeholder="密码"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+        </div>
+        <div className="form-block">
+          <div className="input-row">
+            <input
+              type="password"
+              name="confirmPassword"
+              id="confirmPassword"
+              placeholder="确认密码"
+              value={verifyPassword}
+              onFocus={() => setDescribeText('请再输入一次您的密码以确认无误！')}
+              onChange={(e) => setVerifyPassword(e.target.value)}
+              onBlur={() => formCheck()}
             />
           </div>
         </div>
