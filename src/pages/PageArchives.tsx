@@ -366,6 +366,17 @@ const BlogDetail = styled.div`
       }
     }
 
+    code {
+      font-family: JetBrains, source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+      line-height: 25px;
+      :hover {
+        background-color: #2c313e;
+      }
+      span.linenumber {
+        color: #474d5c;
+      }
+    }
+
     pre {
       border-radius: 8px;
       background-color: #282c34;
