@@ -1,3 +1,8 @@
+@font-face {
+  font-family: 'JetBrains';
+  src: url('./fonts/variable/JetBrainsMono[wght].ttf');
+}
+
 div#root {
   height: 100%;
 }
@@ -12,7 +17,14 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  font-family: JetBrains, source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  line-height: 23px;
+  :hover{
+    background-color: #2c313e;
+  }
+  span.linenumber {
+    color: #474d5c;
+  }
 }
 
 /* @media all and (min-width: 768px) {

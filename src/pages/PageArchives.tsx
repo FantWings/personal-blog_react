@@ -260,7 +260,7 @@ const markdownComponents = {
       <>
         <SyntaxHighlighter
           style={atomOneDark}
-          customStyle={{ padding: '1em' }}
+          customStyle={{ padding: '1em', FontFace: 'JetBrains' }}
           language={match[1]}
           PreTag="div"
           showLineNumbers={true}
@@ -274,11 +274,11 @@ const markdownComponents = {
           </div>
           <div className="item">
             <span className="title">
-              {node.data ? `${node.data.meta}` : 'untitled'} - Language {match[1]} - CodePreview
+              {node.data ? `${node.data.meta}` : 'untitled'} - {match[1]} - CodeView
             </span>
           </div>
           <div className="item">
-            <span className="copyBtn" onClick={() => message.success('代码已复制到剪贴板')}>
+            <span className="copyBtn" onClick={() => message.success('代码已复制到剪贴板，转载请务必注明来源！')}>
               <CopyOutlined />
             </span>
           </div>
@@ -344,6 +344,7 @@ const BlogDetail = styled.div`
       padding-top: 30px;
       box-shadow: 0 0 25px 0px #7f7f7f;
       position: relative;
+      margin: 25px 0;
       :hover {
         div.tool-bar span.copyBtn {
           font-size: 1em;
