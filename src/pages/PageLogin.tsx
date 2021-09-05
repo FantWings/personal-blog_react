@@ -129,7 +129,7 @@ function LoginForm() {
       </div>
       <button onClick={(e) => HandleLogin(e)}>
         {loading && <LoadingOutlined />}
-        <span style={{ margin: '0 1em' }}>{loading ? '正在请求' : '登录'}</span>
+        <span style={{ margin: '0 1em' }}>{loading ? '请稍等' : '登录'}</span>
       </button>
     </CustomForm>
   )
@@ -171,7 +171,6 @@ function RegisterFrom() {
       })
       .catch((e) => {
         setButtom('再试一次')
-        console.log(e)
       })
   }
 

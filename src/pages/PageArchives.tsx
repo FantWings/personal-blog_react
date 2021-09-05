@@ -64,6 +64,7 @@ export default function PageArchives() {
               <span>{views}</span>
             </div>
           </div>
+          <Divider dashed />
           <div className="body">
             <Markdown children={content} remarkPlugins={[gfm]} components={markdownComponents} />
           </div>
@@ -307,7 +308,6 @@ const BlogDetail = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2em;
     div#titleBlock {
       display: flex;
       flex-direction: column;
@@ -338,6 +338,32 @@ const BlogDetail = styled.div`
   div.body {
     display: flex;
     flex-direction: column;
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+      padding-left: 0.5em;
+      border-left: #918ee5 3px solid;
+      font-weight: bold;
+    }
+    blockquote {
+      background-color: #f8f8f8;
+      padding: 13px;
+      border-left: #4d4d4d 10px solid;
+      box-sizing: border-box;
+    }
+
+    code {
+      margin: 0 1px;
+      padding: 0.2em 0.4em;
+      font-size: 0.9em;
+      background: #f2f4f5;
+      border: 1px solid #f0f0f0;
+      border-radius: 3px;
+    }
+
     pre {
       border-radius: 8px;
       background-color: #161616;

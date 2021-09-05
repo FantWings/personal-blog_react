@@ -7,7 +7,7 @@ div#root {
 }
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro SC', 'SF Pro Text', 'SF Pro Icons', PingFang SC, Lantinghei SC, Microsoft Yahei, Hiragino Sans GB, Microsoft Sans Serif, WenQuanYi Micro Hei, sans-serif, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro SC', 'SF Pro Text', 'SF Pro Icons', PingFang SC, Lantinghei SC, 微软雅黑, Microsoft Yahei, Hiragino Sans GB, Microsoft Sans Serif, WenQuanYi Micro Hei, sans-serif, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #f5f5f7;
