@@ -6,7 +6,14 @@ import copyLink from 'copy-to-clipboard'
 import gfm from 'remark-gfm'
 import SyntaxHighlighter from 'react-syntax-highlighter'
 import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs'
-import { LoadingOutlined, QrcodeOutlined, LinkOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
+import {
+  LoadingOutlined,
+  QrcodeOutlined,
+  LinkOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  CopyOutlined,
+} from '@ant-design/icons'
 import { Tooltip, Divider, message, Popconfirm, Avatar } from 'antd'
 
 import { ThemeColor } from '../utils/constent'
@@ -250,15 +257,33 @@ const markdownComponents = {
   code({ node, inline, className, children, ...props }: any) {
     const match = /language-(\w+)/.exec(className || '')
     return !inline && match ? (
-      <SyntaxHighlighter
-        style={atomOneDark}
-        language={match[1]}
-        PreTag="div"
-        showLineNumbers={true}
-        wrapLongLines={true}
-        children={String(children).replace(/\n$/, '')}
-        {...props}
-      />
+      <>
+        <SyntaxHighlighter
+          style={atomOneDark}
+          customStyle={{ padding: '1em' }}
+          language={match[1]}
+          PreTag="div"
+          showLineNumbers={true}
+          wrapLongLines={true}
+          children={String(children).replace(/\n$/, '')}
+          {...props}
+        />
+        <div className="tool-bar">
+          <div className="item">
+            <span className="control" />
+          </div>
+          <div className="item">
+            <span className="title">
+              {node.data ? `${node.data.meta}` : 'untitled'} - Language {match[1]} - CodePreview
+            </span>
+          </div>
+          <div className="item">
+            <span className="copyBtn" onClick={() => message.success('代码已复制到剪贴板')}>
+              <CopyOutlined />
+            </span>
+          </div>
+        </div>
+      </>
     ) : (
       <code className={className} {...props}>
         {children}
@@ -313,6 +338,55 @@ const BlogDetail = styled.div`
   div.body {
     display: flex;
     flex-direction: column;
+    pre {
+      border-radius: 8px;
+      background-color: #161616;
+      padding-top: 30px;
+      box-shadow: 0 0 25px 0px #7f7f7f;
+      position: relative;
+      :hover {
+        div.tool-bar span.copyBtn {
+          font-size: 1em;
+        }
+      }
+      div.tool-bar {
+        display: flex;
+        position: absolute;
+        width: 100%;
+        top: 0;
+        color: #fff;
+        justify-content: space-between;
+        align-items: center;
+        height: 30px;
+        padding: 0 10px;
+
+        span.control {
+          ::before {
+            content: '';
+            background: #fc625d;
+            width: 11px;
+            height: 11px;
+            left: 10px;
+            top: 10px;
+            position: absolute;
+            box-shadow: 20px 0 #fdbc40, 40px 0 #35cd4b;
+            border-radius: 50%;
+          }
+        }
+
+        span.title {
+          color: #a9a9a9;
+        }
+
+        span.copyBtn {
+          font-size: 0;
+          transition: all 0.3s;
+          :hover {
+            cursor: pointer;
+          }
+        }
+      }
+    }
   }
 
   div.tools {
