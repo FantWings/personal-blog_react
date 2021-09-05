@@ -259,16 +259,6 @@ const markdownComponents = {
     const match = /language-(\w+)/.exec(className || '')
     return !inline && match ? (
       <>
-        <SyntaxHighlighter
-          style={atomOneDark}
-          customStyle={{ padding: '1em', FontFace: 'JetBrains' }}
-          language={match[1]}
-          PreTag="div"
-          showLineNumbers={true}
-          wrapLongLines={true}
-          children={String(children).replace(/\n$/, '')}
-          {...props}
-        />
         <div className="tool-bar">
           <div className="item">
             <span className="control" />
@@ -284,6 +274,16 @@ const markdownComponents = {
             </span>
           </div>
         </div>
+        <SyntaxHighlighter
+          style={atomOneDark}
+          customStyle={{ padding: '1em', FontFace: 'JetBrains' }}
+          language={match[1]}
+          PreTag="div"
+          showLineNumbers={true}
+          wrapLongLines={true}
+          children={String(children).replace(/\n$/, '')}
+          {...props}
+        />
       </>
     ) : (
       <code className={className} {...props}>
@@ -368,7 +368,7 @@ const BlogDetail = styled.div`
 
     pre {
       border-radius: 8px;
-      background-color: #161616;
+      background-color: #282c34;
       padding-top: 30px;
       box-shadow: 0 0 25px 0px #7f7f7f;
       position: relative;
@@ -383,11 +383,12 @@ const BlogDetail = styled.div`
         position: absolute;
         width: 100%;
         top: 0;
-        color: #fff;
+        color: #a9a9a9;
         justify-content: space-between;
         align-items: center;
         height: 30px;
         padding: 0 10px;
+        z-index: 10;
 
         span.control {
           ::before {
@@ -403,15 +404,12 @@ const BlogDetail = styled.div`
           }
         }
 
-        span.title {
-          color: #a9a9a9;
-        }
-
         span.copyBtn {
           font-size: 0;
           transition: all 0.3s;
           :hover {
             cursor: pointer;
+            color: #fff;
           }
         }
       }
