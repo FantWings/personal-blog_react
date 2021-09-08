@@ -15,7 +15,7 @@ import { useUserInfo } from '../utils/hooks'
 export default function PageHome() {
   const history = useHistory()
   const [loading, setLoading] = useState(true)
-  const [data, setData] = useState([])
+  const [data, setData] = useState<Array<archivePreviewRespond>>([])
   // const [tags, setTags] = useState([])
   // const [role, setRole] = useState(0)
 
@@ -29,18 +29,25 @@ export default function PageHome() {
 
   useEffect(() => {
     setLoading(true)
-    fetchData(`${BASEURL}/api/v1/archive/getList${history.location.search}`, 'GET')
+    fetchData(`${BASEURL}/api/v1/archive/getList`, 'GET')
       .then((data) => setData(data))
       .finally(() => setLoading(false))
       .catch(({ msg }) => console.log(`博文列表获取失败：${msg}`))
     // 监听URLsearch参数，用于TAG给组件进行触发筛选
-  }, [history.location.search])
+  }, [])
 
   // useEffect(() => {
   //   fetchData(`${BASEURL}/api/v1/archive/getTags`, 'GET')
   //     .then((data) => setTags(data))
   //     .catch(({ msg }) => console.log(`TAG列表获取失败：${msg}`))
   // }, [])
+
+  const loadMore = () => {
+    fetchData(`${BASEURL}/api/v1/archive/getList?limit=${data.length + 10}`, 'GET')
+      .then((data) => setData(data))
+      .finally(() => setLoading(false))
+      .catch(({ msg }) => console.log(`博文列表获取失败：${msg}`))
+  }
 
   const filterByTags = (tags: string) => {
     setLoading(true)
@@ -97,7 +104,7 @@ export default function PageHome() {
             )
           }
         )}
-        <Loadmore style={{ cursor: loading ? 'wait' : 'pointer' }} onClick={() => setLoading(!loading)}>
+        <Loadmore style={{ cursor: loading ? 'wait' : 'pointer' }} onClick={() => loadMore()}>
           {loading ? <LoadingOutlined /> : '加载更多'}
         </Loadmore>
       </ArchivesContianer>

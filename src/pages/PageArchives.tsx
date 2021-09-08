@@ -265,7 +265,7 @@ const markdownComponents = {
           </div>
           <div className="item">
             <span className="title">
-              {node.data ? `${node.data.meta}` : 'untitled'} - {match[1]} - CodeView
+              {match[1]} - {node.data ? `${node.data.meta}` : 'fragments'}
             </span>
           </div>
           <div className="item">
