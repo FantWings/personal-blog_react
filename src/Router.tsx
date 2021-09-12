@@ -8,7 +8,7 @@ import PageArchives from './pages/PageArchives'
 import PageEditer from './pages/PageEditor'
 import PageLogin from './pages/PageLogin'
 import Navbar from './components/navBar'
-import { RECORDNUM, VERSION } from './config'
+import { RECORDNUM, BUILD } from './config'
 import { GithubOutlined } from '@ant-design/icons'
 
 export default function Router() {
@@ -50,7 +50,7 @@ function App() {
               {RECORDNUM}
             </a>
           </span>
-          <span>Build: {VERSION}</span>
+          <span>Build: {BUILD}</span>
         </div>
         <div>
           <a className="link" href="https://github.com/FantWings/personal-blog_react" target="_blank" rel="noreferrer">
