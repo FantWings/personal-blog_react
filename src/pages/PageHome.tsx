@@ -171,7 +171,7 @@ const ArchivesPreview = styled.div`
   margin-bottom: 10px;
   transition: 0.3s;
   :hover {
-    box-shadow: 0px 0px 20px -5px rgb(158 158 158 / 22%);
+    box-shadow: 0px 0px 10px 5px #f0f0f0;
   }
   .body {
     display: flex;

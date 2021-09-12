@@ -38,21 +38,15 @@ function App() {
         </Switch>
       </PageContainer>
       <Footer>
-        <div>
-          <span style={{ marginRight: '1em' }}>
-            Copyright © 2019
-            <a
-              href="https://beian.miit.gov.cn/"
-              target="_blank"
-              rel="noreferrer"
-              style={{ color: 'inherit', margin: '0 4px' }}
-            >
+        <div id="siteinfo">
+          <span id="record-number">
+            <a href="https://beian.miit.gov.cn/" target="_blank" rel="noreferrer">
               {RECORDNUM}
             </a>
           </span>
-          <span>Build: {BUILD}</span>
+          <span id="build-version">Build: {BUILD}</span>
         </div>
-        <div>
+        <div id="extend-button">
           <a className="link" href="https://github.com/FantWings/personal-blog_react" target="_blank" rel="noreferrer">
             <GithubOutlined />
             <span style={{ marginLeft: '.5em' }}>GitHub</span>
@@ -76,7 +70,8 @@ function App() {
 const PageContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
-  height: calc(100% - 64px);
+  //body高度 = 100视口 - 64导航栏高度 - 64页脚高度
+  min-height: calc(100vh - 64px - 64px);
   box-sizing: border-box;
   max-width: 1200px;
   margin: 0 auto;
@@ -98,25 +93,55 @@ const Footer = styled.div`
   padding: 1em 0;
   color: #e6e6e6;
   background-color: #333;
+  height: 64px;
+  flex-wrap: wrap;
+  padding: 0 3em;
+  @media all and (max-width: 768px) {
+    height: 86px;
+    flex-direction: column;
+  }
+
   div {
     display: inherit;
+    flex: 1;
     align-items: center;
   }
-  a.link {
-    display: inherit;
-    color: inherit;
-    margin: 0 0.5em;
-    align-items: center;
-    padding: 2px 8px;
-    border-radius: 5px;
-    transition: all 0.3s;
-    :hover {
-      cursor: pointer;
-      color: #ffffff;
-      background-color: #1b1b1b;
+
+  div#siteinfo {
+    justify-content: start;
+    #record-number {
+      margin-right: 1em;
+      a {
+        color: inherit;
+        margin: 0 4px;
+      }
+    }
+
+    #build-version {
+      @media all and (max-width: 768px) {
+        display: none;
+      }
     }
   }
-  #icon-react {
-    width: 16px;
+
+  div#extend-button {
+    justify-content: end;
+    #icon-react {
+      width: 16px;
+    }
+    a.link {
+      display: inherit;
+      color: inherit;
+      margin: 0 0.5em;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 5px;
+      transition: all 0.3s;
+      :hover {
+        cursor: pointer;
+        color: #ffffff;
+        background-color: #1b1b1b;
+      }
+    }
   }
 `
