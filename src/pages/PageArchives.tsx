@@ -351,6 +351,7 @@ const BlogDetail = styled.div`
       padding-left: 0.5em;
       border-left: #918ee5 3px solid;
       font-weight: bold;
+      margin: 1em 0;
     }
     blockquote {
       background-color: #f8f8f8;
