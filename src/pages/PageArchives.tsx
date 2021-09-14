@@ -362,23 +362,12 @@ const BlogDetail = styled.div`
 
     p {
       code {
-        margin: 0 1px;
-        padding: 0.2em 0.4em;
+        margin: 0 5px;
+        padding: 2px 5px;
         font-size: 0.9em;
         background: #f2f4f5;
         border: 1px solid #f0f0f0;
-        border-radius: 3px;
-      }
-    }
-
-    code {
-      font-family: JetBrains, source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
-      line-height: 25px;
-      :hover {
-        background-color: #2c313e;
-      }
-      span.linenumber {
-        color: #474d5c;
+        border-radius: 4px;
       }
     }
 
@@ -427,6 +416,16 @@ const BlogDetail = styled.div`
             cursor: pointer;
             color: #fff;
           }
+        }
+      }
+      code {
+        font-family: JetBrains, source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+        line-height: 25px;
+        :hover {
+          background-color: #2c313e;
+        }
+        span.linenumber {
+          color: #474d5c;
         }
       }
     }
