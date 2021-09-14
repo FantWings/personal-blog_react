@@ -339,6 +339,10 @@ const BlogDetail = styled.div`
     display: flex;
     flex-direction: column;
 
+    img {
+      width: 100%;
+    }
+
     h1,
     h2,
     h3,
