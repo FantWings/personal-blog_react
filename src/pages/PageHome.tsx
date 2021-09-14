@@ -43,6 +43,7 @@ export default function PageHome() {
   // }, [])
 
   const loadMore = () => {
+    setLoading(true)
     fetchData(`${BASEURL}/api/v1/archive/getList?limit=${data.length + 10}`, 'GET')
       .then((data) => setData(data))
       .finally(() => setLoading(false))
