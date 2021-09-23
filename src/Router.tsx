@@ -95,7 +95,7 @@ const Footer = styled.div`
   background-color: #333;
   height: 64px;
   flex-wrap: wrap;
-  padding: 0 3em;
+  padding: 12px;
   @media all and (max-width: 768px) {
     height: 86px;
     flex-direction: column;
@@ -103,11 +103,11 @@ const Footer = styled.div`
 
   div {
     display: inherit;
-    flex: 1;
     align-items: center;
   }
 
   div#siteinfo {
+    flex: 1;
     justify-content: start;
     #record-number {
       margin-right: 1em;
