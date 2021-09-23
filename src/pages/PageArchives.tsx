@@ -5,6 +5,7 @@ import Markdown from 'react-markdown'
 import copyLink from 'copy-to-clipboard'
 import gfm from 'remark-gfm'
 import SyntaxHighlighter from 'react-syntax-highlighter'
+import QRCode from 'qrcode.react'
 import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs'
 import {
   LoadingOutlined,
@@ -109,11 +110,14 @@ function ArchiveTools({ archId, author_uuid }: { archId: string; author_uuid: st
   return (
     <div className="tools">
       <ul id="userTools" className="disableDefaultListStyle">
-        <Tooltip placement="top" title="获取二维码">
+        <div className="archiveQRCode">
+          <div className="QRContent">
+            <QRCode className="QRCode-qrCode" value={window.location.href} size={100} />
+          </div>
           <li>
             <QrcodeOutlined />
           </li>
-        </Tooltip>
+        </div>
         <Tooltip placement="top" title="复制文章链接">
           <li onClick={copyArchiveLink}>
             <LinkOutlined />
@@ -441,6 +445,25 @@ const BlogDetail = styled.div`
       :hover {
         color: ${ThemeColor.red};
         cursor: pointer;
+      }
+    }
+    div.archiveQRCode {
+      div.QRContent {
+        opacity: 0;
+        position: absolute;
+        bottom: -250px;
+        padding: 1em;
+        background-color: #fff;
+        box-shadow: 0px 0px 16px 4px #6b6b6b2e;
+        border-radius: 6px;
+        transition: all 0.2s;
+        canvas {
+          display: block;
+        }
+      }
+      :hover div.QRContent {
+        bottom: -230px;
+        opacity: 1;
       }
     }
   }
