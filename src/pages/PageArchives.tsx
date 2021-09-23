@@ -439,6 +439,7 @@ const BlogDetail = styled.div`
   div.tools {
     display: flex;
     justify-content: space-between;
+    position: relative;
     li {
       font-size: 1.5em;
       margin: 0 0.5em;
@@ -451,18 +452,18 @@ const BlogDetail = styled.div`
       div.QRContent {
         opacity: 0;
         position: absolute;
-        bottom: -250px;
+        bottom: 50px;
         padding: 1em;
         background-color: #fff;
         box-shadow: 0px 0px 16px 4px #6b6b6b2e;
         border-radius: 6px;
-        transition: all 0.2s;
+        transition: all 0.3s ease-in-out 0.3s;
         canvas {
           display: block;
         }
       }
       :hover div.QRContent {
-        bottom: -230px;
+        bottom: 40px;
         opacity: 1;
       }
     }
