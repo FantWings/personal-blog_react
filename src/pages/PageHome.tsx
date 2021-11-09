@@ -106,7 +106,14 @@ export default function PageHome() {
           }
         )}
         <Loadmore style={{ cursor: loading ? 'wait' : 'pointer' }} onClick={() => loadMore()}>
-          {loading ? <LoadingOutlined /> : '加载更多'}
+          {loading ? (
+            <span>
+              <LoadingOutlined />
+              &nbsp;正在加载
+            </span>
+          ) : (
+            '加载更多'
+          )}
         </Loadmore>
       </ArchivesContianer>
       {/* <WidgesContainer>

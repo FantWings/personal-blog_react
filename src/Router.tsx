@@ -103,11 +103,11 @@ const Footer = styled.div`
 
   div {
     display: inherit;
-    flex: 1;
     align-items: center;
   }
 
   div#siteinfo {
+    flex: 1;
     justify-content: start;
     #record-number {
       margin-right: 1em;
