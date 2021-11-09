@@ -73,7 +73,7 @@ const PageContainer = styled.div`
   //body高度 = 100视口 - 64导航栏高度 - 64页脚高度
   min-height: calc(100vh - 64px - 64px);
   box-sizing: border-box;
-  max-width: 1200px;
+  max-width: 100vw;
   margin: 0 auto;
   padding: 16px;
   @media all and (min-width: 768px) {
@@ -96,7 +96,7 @@ const Footer = styled.div`
   height: 64px;
   flex-wrap: wrap;
   padding: 0 3em;
-  @media all and (max-width: 768px) {
+  @media all and (max-width: 414px) {
     height: 86px;
     flex-direction: column;
   }

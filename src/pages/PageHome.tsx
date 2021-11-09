@@ -90,7 +90,7 @@ export default function PageHome() {
                     <Link className="title" to={`/archives/${id}`}>
                       {title}
                     </Link>
-                    <span className="text">{preview}</span>
+                    <div className="text">{preview}</div>
                   </div>
                 </div>
                 <div className="footer">
@@ -171,6 +171,7 @@ const ArchivesPreview = styled.div`
   border-radius: 0.25rem;
   margin-bottom: 10px;
   transition: 0.3s;
+  max-width: 100vw;
   :hover {
     box-shadow: 0px 0px 10px 5px #f0f0f0;
   }
@@ -205,7 +206,7 @@ const ArchivesPreview = styled.div`
     .content {
       display: block;
       flex-wrap: wrap;
-      padding: 0 1rem;
+      padding: 0 0.5rem;
       flex: 1;
       a.title {
         display: block;
@@ -220,13 +221,17 @@ const ArchivesPreview = styled.div`
           cursor: pointer;
         }
       }
-      span.text {
+      div.text {
+        display: -webkit-box;
         font-size: 0.85rem;
         color: ${ThemeColor.gray};
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 3;
         overflow: hidden;
-        display: -webkit-box;
+        text-overflow: ellipsis;
+        @media all and (max-width: 414px) {
+          max-width: 80vw;
+        }
       }
     }
   }
@@ -238,7 +243,7 @@ const ArchivesPreview = styled.div`
     color: ${ThemeColor.gray};
     align-items: flex-end;
     justify-content: space-between;
-    @media all and (max-width: 768px) {
+    @media all and (max-width: 414px) {
       flex-direction: column;
       align-items: end;
       ul.tags {
