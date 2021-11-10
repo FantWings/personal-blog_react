@@ -96,7 +96,7 @@ const Footer = styled.div`
   height: 64px;
   flex-wrap: wrap;
   padding: 0 3em;
-  @media all and (max-width: 414px) {
+  @media all and (max-width: 464px) {
     height: 86px;
     flex-direction: column;
   }

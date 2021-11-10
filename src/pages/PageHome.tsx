@@ -68,7 +68,7 @@ export default function PageHome() {
         </NoticeBar>
       )} */}
       <ArchivesContianer>
-        {userInfo?.role === 10 && (
+        {userInfo?.is_admin === 1 && (
           <AddArchive onClick={() => history.push('/add', { edit: false })}>
             <PlusOutlined />
             <span>撰写新文章</span>
@@ -236,7 +236,7 @@ const ArchivesPreview = styled.div`
         -webkit-line-clamp: 3;
         overflow: hidden;
         text-overflow: ellipsis;
-        @media all and (max-width: 414px) {
+        @media all and (max-width: 454px) {
           max-width: 80vw;
         }
       }

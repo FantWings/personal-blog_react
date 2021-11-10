@@ -35,7 +35,7 @@ export interface userInfoRespond {
   qq?: number
   nickname: string
   uuid: string
-  role: number
+  is_admin: number
 }
 
 export interface commentsDataRespond {

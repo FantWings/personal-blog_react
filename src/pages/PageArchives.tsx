@@ -239,7 +239,7 @@ function ArchiveComment({ archId }: { archId: string }) {
                   {userInfo && (
                     <div className="comment_control">
                       <span className="textBtn">回复</span>
-                      {(userInfo.role === 10 || userInfo.uuid === owner) && (
+                      {(userInfo.is_admin === 1 || userInfo.uuid === owner) && (
                         <span className="textBtn" onClick={() => handleDeleteComment(id)}>
                           删除
                         </span>
