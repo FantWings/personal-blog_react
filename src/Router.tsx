@@ -77,7 +77,9 @@ const PageContainer = styled.div`
   margin: 0 auto;
   padding: 16px;
   @media all and (min-width: 768px) {
+    justify-content: center;
     padding: 25px;
+    max-width: 1200px;
   }
   /* @media all and (max-width: 768px) {
     flex-wrap: wrap;
