@@ -1,5 +1,11 @@
 import { message, notification } from 'antd'
-import { standerdResponse } from './interfaces'
+
+// 服务器端返回的标准Interface
+interface standerdResponse {
+  data: any
+  msg: string
+  status: number
+}
 
 const fetchData = (url: string, method: 'GET' | 'POST' | 'PUT' | 'DELETE', headers?: object, body?: object) => {
   return fetch(url, {
@@ -28,7 +34,7 @@ const fetchData = (url: string, method: 'GET' | 'POST' | 'PUT' | 'DELETE', heade
       (response) => {
         notification['error']({
           message: '服务器通讯失败',
-          description: `路径：${url}， 原因：${response}`,
+          description: `原因：${response}`,
           key: 'socketError',
         })
         return { status: 1, msg: '与服务器通讯失败' }

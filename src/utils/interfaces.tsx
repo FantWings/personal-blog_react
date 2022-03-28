@@ -1,10 +1,5 @@
-export interface standerdResponse {
-  data: any
-  msg: string
-  status: number
-}
-
-export interface archivePreviewRespond {
+// 查询文档返回格式
+export interface archiveListsInterface {
   id: number
   title: string
   preview: string
@@ -16,7 +11,7 @@ export interface archivePreviewRespond {
   time_for_read: number
 }
 
-export interface blogDetailRespond {
+export interface archiveInterface {
   title: string
   views: number
   author: string
@@ -28,7 +23,7 @@ export interface blogDetailRespond {
   tags: Array<string>
 }
 
-export interface userInfoRespond {
+export interface userDataInterface {
   avatar: string
   email: { addr: string; verifyed: number }
   phone?: number
@@ -38,7 +33,7 @@ export interface userInfoRespond {
   is_admin: number
 }
 
-export interface commentsDataRespond {
+export interface commentsInterface {
   id: number
   owner: string
   avatar: string

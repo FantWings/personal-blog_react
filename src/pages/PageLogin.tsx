@@ -7,7 +7,7 @@ import { LoadingOutlined } from '@ant-design/icons'
 import { ThemeColor } from '../utils/constent'
 import fetchData from '../utils/fetch'
 import { BASEURL } from '../config'
-import { userInfoRespond } from '../utils/interfaces'
+import { userDataInterface } from '../utils/interfaces'
 
 export default function PageLogin() {
   const [type, setType] = useState(0)
@@ -64,7 +64,7 @@ function LoginForm() {
         // 登录成功，获取用户信息
         return fetchData(`${BASEURL}/api/v1/user/userInfo`, 'GET', { token: token })
       })
-      .then((userInfoData: userInfoRespond) => localStorage.setItem('userInfo', JSON.stringify(userInfoData)))
+      .then((userInfoData: userDataInterface) => localStorage.setItem('userInfo', JSON.stringify(userInfoData)))
       .then(() => navigate(-1))
       .finally(() => {
         setLoading(false)
@@ -164,7 +164,7 @@ function RegisterFrom() {
         // 注册成功，获取用户信息
         return fetchData(`${BASEURL}/api/v1/user/userInfo`, 'GET', { token })
       })
-      .then((userInfoData: userInfoRespond) => localStorage.setItem('userInfo', JSON.stringify(userInfoData)))
+      .then((userInfoData: userDataInterface) => localStorage.setItem('userInfo', JSON.stringify(userInfoData)))
       .then(() => navigate('/'))
       .finally(() => {
         setLoading(false)

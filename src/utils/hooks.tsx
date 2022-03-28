@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import { userInfoRespond } from './interfaces'
+import { userDataInterface } from './interfaces'
 
 export const useUserInfo = () => {
   // 初始化初始状态
-  const [data, setData] = useState<userInfoRespond>()
+  const [data, setData] = useState<userDataInterface>()
 
   useEffect(() => {
     // 从localstorge序列化用户信息，返回给调用者

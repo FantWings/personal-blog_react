@@ -22,14 +22,14 @@ import { ThemeColor } from '../utils/constent'
 // import IconButton from '../components/iconButton'
 import { useEffect, useState } from 'react'
 import fetchData from '../utils/fetch'
-import { blogDetailRespond, commentsDataRespond } from '../utils/interfaces'
+import { archiveInterface, commentsInterface } from '../utils/interfaces'
 import { BASEURL } from '../config'
 import { useUserInfo } from '../utils/hooks'
 
 export default function PageArchives() {
   // 从URL获取文档ID
   const { archId } = useParams<{ archId: string }>()
-  const [data, setData] = useState<blogDetailRespond>({
+  const [data, setData] = useState<archiveInterface>({
     title: '',
     createTime: 0,
     updateTime: 0,
@@ -42,7 +42,7 @@ export default function PageArchives() {
   })
 
   useEffect(() => {
-    fetchData(`${BASEURL}/api/v1/archive/getDetail/${archId}`, 'GET').then((data: blogDetailRespond) => {
+    fetchData(`${BASEURL}/api/v1/archive/getDetail/${archId}`, 'GET').then((data: archiveInterface) => {
       setData(data)
     })
   }, [archId])
@@ -155,11 +155,11 @@ function ArchiveTools({ archId, author_uuid }: { archId: string | undefined; aut
 function ArchiveComment({ archId }: { archId: string | undefined }) {
   const [submitting, setSubmitting] = useState(false)
   const [commentText, setCommentText] = useState('')
-  const [comments, setComments] = useState<Array<commentsDataRespond>>([])
+  const [comments, setComments] = useState<Array<commentsInterface>>([])
   const [userInfo] = useUserInfo()
 
   useEffect(() => {
-    fetchData(`${BASEURL}/api/v1/archive/comment?archId=${archId}`, 'GET').then((data: Array<commentsDataRespond>) =>
+    fetchData(`${BASEURL}/api/v1/archive/comment?archId=${archId}`, 'GET').then((data: Array<commentsInterface>) =>
       setComments(data)
     )
   }, [archId])
@@ -174,7 +174,7 @@ function ArchiveComment({ archId }: { archId: string | undefined }) {
       .then(() => {
         return fetchData(`${BASEURL}/api/v1/archive/comment?archId=${archId}`, 'GET')
       })
-      .then((data: Array<commentsDataRespond>) => {
+      .then((data: Array<commentsInterface>) => {
         setComments(data)
         message.success('评论已成功提交')
         setCommentText('')
@@ -190,7 +190,7 @@ function ArchiveComment({ archId }: { archId: string | undefined }) {
         message.success('操作成功')
         return fetchData(`${BASEURL}/api/v1/archive/comment?archId=${archId}`, 'GET')
       })
-      .then((data: Array<commentsDataRespond>) => setComments(data))
+      .then((data: Array<commentsInterface>) => setComments(data))
       .catch((err) => console.log(err))
   }
 

@@ -3,7 +3,7 @@ import { useState } from 'react'
 import styled from 'styled-components'
 
 import { ThemeColor } from '../utils/constent'
-import { archivePreviewRespond } from '../utils/interfaces'
+import { archiveListsInterface } from '../utils/interfaces'
 import fetchData from '../utils/fetch'
 import { Link, useNavigate } from 'react-router-dom'
 import { BASEURL } from '../config'
@@ -15,7 +15,7 @@ import { useUserInfo } from '../utils/hooks'
 export default function PageHome() {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
-  const [data, setData] = useState<Array<archivePreviewRespond>>([])
+  const [data, setData] = useState<Array<archiveListsInterface>>([])
   // const [tags, setTags] = useState([])
   // const [role, setRole] = useState(0)
 
@@ -75,7 +75,7 @@ export default function PageHome() {
           </AddArchive>
         )}
         {data.map(
-          ({ id, cover_image, title, preview, views, time_for_read, update_time, tags }: archivePreviewRespond) => {
+          ({ id, cover_image, title, preview, views, time_for_read, update_time, tags }: archiveListsInterface) => {
             return (
               <ArchivesPreview key={id}>
                 <div className="body">

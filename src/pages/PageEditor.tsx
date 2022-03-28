@@ -11,7 +11,7 @@ import { BASEURL } from '../config'
 import { ThemeColor } from '../utils/constent'
 import styled from 'styled-components'
 import { message } from 'antd'
-import { blogDetailRespond } from '../utils/interfaces'
+import { archiveInterface } from '../utils/interfaces'
 import { CloseOutlined } from '@ant-design/icons'
 
 export default function PageEditer() {
@@ -30,7 +30,7 @@ export default function PageEditer() {
   useEffect(() => {
     isEdit &&
       fetchData(`${BASEURL}/api/v1/archive/getDetail/${archId}`, 'GET')
-        .then(({ content, title, coverImage, tags }: blogDetailRespond) => {
+        .then(({ content, title, coverImage, tags }: archiveInterface) => {
           setContent(content)
           setTitle(title)
           setCoverImage(coverImage)
