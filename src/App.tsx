@@ -1,4 +1,4 @@
-import { Route, Switch, Redirect } from 'react-router'
+import { Route, Routes } from 'react-router'
 
 import styled from 'styled-components'
 
@@ -11,31 +11,20 @@ import Navbar from './components/navBar'
 import { RECORDNUM, BUILD } from './config'
 import { GithubOutlined } from '@ant-design/icons'
 
-export default function Router() {
-  return (
-    <Switch>
-      <Route path="/login" component={Login} exact />
-      <Route path="/" component={App} />
-    </Switch>
-  )
-}
-
-function Login() {
+export function LoginPage() {
   return <PageLogin />
 }
 
-function App() {
+export function MainPage() {
   return (
     <div className="App">
       <Navbar />
       <PageContainer>
-        <Switch>
-          <Route path="/" component={PageHome} exact></Route>
-          <Route path="/archives/:archId" component={PageArchives} exact></Route>
-          <Route path="/edit" component={PageEditer} exact></Route>
-          <Route path="/add" component={PageEditer} exact></Route>
-          <Redirect to="/" />
-        </Switch>
+        <Routes>
+          <Route path="/" element={<PageHome />}></Route>
+          <Route path="/archives/:archId" element={<PageArchives />}></Route>
+          <Route path="/edit" element={<PageEditer />}></Route>
+        </Routes>
       </PageContainer>
       <Footer>
         <div id="siteinfo">

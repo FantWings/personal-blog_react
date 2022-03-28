@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useHistory } from 'react-router'
+import { useNavigate } from 'react-router'
 import styled from 'styled-components'
 import { Avatar } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
@@ -47,7 +47,7 @@ function LoginForm() {
   const [avatar, setAvatar] = useState('')
   const [nickname, setNickname] = useState('')
   const [loading, setLoading] = useState(false)
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const HandleLogin = (e: any) => {
     e.preventDefault()
@@ -65,7 +65,7 @@ function LoginForm() {
         return fetchData(`${BASEURL}/api/v1/user/userInfo`, 'GET', { token: token })
       })
       .then((userInfoData: userInfoRespond) => localStorage.setItem('userInfo', JSON.stringify(userInfoData)))
-      .then(() => history.goBack())
+      .then(() => navigate(-1))
       .finally(() => {
         setLoading(false)
       })
@@ -146,7 +146,7 @@ function RegisterFrom() {
   const [checkPass, setCheckPass] = useState(false)
   const [loading, setLoading] = useState(false)
   const [buttom, setButtom] = useState('创建账号')
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const HandleRegister = (e: any) => {
     e.preventDefault()
@@ -165,7 +165,7 @@ function RegisterFrom() {
         return fetchData(`${BASEURL}/api/v1/user/userInfo`, 'GET', { token })
       })
       .then((userInfoData: userInfoRespond) => localStorage.setItem('userInfo', JSON.stringify(userInfoData)))
-      .then(() => history.push('/'))
+      .then(() => navigate('/'))
       .finally(() => {
         setLoading(false)
       })

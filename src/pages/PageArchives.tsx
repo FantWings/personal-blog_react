@@ -1,5 +1,5 @@
 // 导入标准库
-import { useHistory, useParams } from 'react-router'
+import { useNavigate, useParams } from 'react-router'
 import styled from 'styled-components'
 import Markdown from 'react-markdown'
 import copyLink from 'copy-to-clipboard'
@@ -79,9 +79,9 @@ export default function PageArchives() {
 }
 
 // 工具栏组件
-function ArchiveTools({ archId, author_uuid }: { archId: string; author_uuid: string | undefined }) {
+function ArchiveTools({ archId, author_uuid }: { archId: string | undefined; author_uuid: string | undefined }) {
   // 博客工具栏
-  const history = useHistory()
+  const navigate = useNavigate()
   const [userInfo] = useUserInfo()
 
   // 拷贝链接到剪贴板
@@ -99,10 +99,10 @@ function ArchiveTools({ archId, author_uuid }: { archId: string; author_uuid: st
     }).then(
       () => {
         message.success('操作成功')
-        history.push('/')
+        navigate('/')
       },
       ({ status }) => {
-        if (status === 10) history.push('/login')
+        if (status === 10) navigate('/login')
       }
     )
   }
@@ -112,7 +112,7 @@ function ArchiveTools({ archId, author_uuid }: { archId: string; author_uuid: st
       <ul id="userTools" className="disableDefaultListStyle">
         <div className="archiveQRCode">
           <div className="QRContent">
-            <QRCode className="QRCode-qrCode" value={window.location.href} size={100} />
+            <QRCode value={window.location.href} size={100} />
           </div>
           <li>
             <QrcodeOutlined />
@@ -127,7 +127,7 @@ function ArchiveTools({ archId, author_uuid }: { archId: string; author_uuid: st
       {author_uuid === userInfo?.uuid && (
         <ul id="AdminTools" className="disableDefaultListStyle">
           <Tooltip placement="top" title="编辑文章">
-            <li onClick={() => history.push('/edit', { edit: true, archId })}>
+            <li onClick={() => navigate('/edit', { state: { edit: true, archId } })}>
               <EditOutlined />
             </li>
           </Tooltip>
@@ -152,7 +152,7 @@ function ArchiveTools({ archId, author_uuid }: { archId: string; author_uuid: st
 }
 
 // 评论功能组件
-function ArchiveComment({ archId }: { archId: string }) {
+function ArchiveComment({ archId }: { archId: string | undefined }) {
   const [submitting, setSubmitting] = useState(false)
   const [commentText, setCommentText] = useState('')
   const [comments, setComments] = useState<Array<commentsDataRespond>>([])

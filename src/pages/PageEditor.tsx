@@ -1,4 +1,4 @@
-import { useHistory, useLocation } from 'react-router'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import MdEditor from 'react-markdown-editor-lite'
 import Markdown from 'react-markdown'
 import gfm from 'remark-gfm'
@@ -15,19 +15,20 @@ import { blogDetailRespond } from '../utils/interfaces'
 import { CloseOutlined } from '@ant-design/icons'
 
 export default function PageEditer() {
-  const location = useLocation<{ edit: boolean; archId: number | undefined }>()
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [content, setContent] = useState('')
   const [title, setTitle] = useState<string | undefined>('')
   const [tags, setTags] = useState<Array<string>>([])
   const [tagsFormText, setTagsFromText] = useState<string>('')
   const [coverImage, setCoverImage] = useState('')
+  const isEdit = searchParams.get('edit')
+  const archId = searchParams.get('archId')
 
-  const { edit, archId } = location.state
-  const history = useHistory()
+  // 如果是编辑模式，向服务器获取编辑模式下对应的文章数据，查询参archId
 
-  // 初始加载函数，用来向服务器获取要修改的文章对应的数据
   useEffect(() => {
-    edit &&
+    isEdit &&
       fetchData(`${BASEURL}/api/v1/archive/getDetail/${archId}`, 'GET')
         .then(({ content, title, coverImage, tags }: blogDetailRespond) => {
           setContent(content)
@@ -36,9 +37,9 @@ export default function PageEditer() {
           setTags(tags)
         })
         .catch(({ status }) => {
-          if (status === 10) return history.push('/login')
+          if (status === 10) return navigate('/login')
         })
-  }, [edit, archId, history])
+  }, [archId, isEdit, navigate])
 
   // 新建模式提交函数，点击提交后，将数据收集给服务器
   const HandleSubmit = () => {
@@ -46,10 +47,10 @@ export default function PageEditer() {
     fetchData(`${BASEURL}/api/v1/archive/add`, 'POST', { token: localStorage.getItem('token') }, body)
       .then(() => {
         message.success('操作成功')
-        history.push('/')
+        navigate('/')
       })
       .catch(({ status }) => {
-        if (status === 10) history.push('/login')
+        if (status === 10) navigate('/login')
       })
   }
 
@@ -64,10 +65,10 @@ export default function PageEditer() {
     )
       .then(() => {
         message.success('操作成功')
-        history.push(`/archives/${archId}`)
+        navigate(`/archives/${archId}`)
       })
       .catch(({ status }) => {
-        if (status === 10) return history.push('/login')
+        if (status === 10) return navigate('/login')
       })
   }
 
@@ -97,8 +98,8 @@ export default function PageEditer() {
     <div style={{ width: '100%' }}>
       <EditContainer>
         <div id="title">
-          <span>{edit ? '编辑文章' : '撰写新文章'}</span>
-          <button onClick={edit ? HandleUpdate : HandleSubmit}>提交</button>
+          <span>{isEdit ? '编辑文章' : '撰写新文章'}</span>
+          <button onClick={isEdit ? HandleUpdate : HandleSubmit}>提交</button>
         </div>
         <input
           type="text"
@@ -112,7 +113,7 @@ export default function PageEditer() {
           renderHTML={(content: string) => {
             return <Markdown children={content} remarkPlugins={[gfm]} />
           }}
-          onChange={(e) => setContent(e.text)}
+          onChange={(e: { text: string }) => setContent(e.text)}
           style={{ height: '600px' }}
         />
         <div id="extraInfo">

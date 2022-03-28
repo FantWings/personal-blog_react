@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import { ThemeColor } from '../utils/constent'
 import { archivePreviewRespond } from '../utils/interfaces'
 import fetchData from '../utils/fetch'
-import { Link, useHistory } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { BASEURL } from '../config'
 // import Widges from '../components/widges'
 import TagGroup from '../components/tagGroup'
@@ -13,7 +13,7 @@ import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
 import { useUserInfo } from '../utils/hooks'
 
 export default function PageHome() {
-  const history = useHistory()
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState<Array<archivePreviewRespond>>([])
   // const [tags, setTags] = useState([])
@@ -69,7 +69,7 @@ export default function PageHome() {
       )} */}
       <ArchivesContianer>
         {userInfo?.is_admin === 1 && (
-          <AddArchive onClick={() => history.push('/add', { edit: false })}>
+          <AddArchive onClick={() => navigate('/add', { state: { edit: false } })}>
             <PlusOutlined />
             <span>撰写新文章</span>
           </AddArchive>

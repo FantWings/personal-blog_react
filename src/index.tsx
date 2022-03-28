@@ -1,13 +1,16 @@
 import ReactDOM from 'react-dom'
-import { BrowserRouter } from 'react-router-dom'
-import 'antd/dist/antd.css'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import 'antd/dist/antd.min.css'
 
 import './index.css'
-import Router from './Router'
+import { LoginPage, MainPage } from './App'
 
 ReactDOM.render(
   <BrowserRouter>
-    <Router />
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="*" element={<MainPage />} />
+    </Routes>
   </BrowserRouter>,
   document.getElementById('root')
 )

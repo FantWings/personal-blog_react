@@ -3,20 +3,20 @@ import styled from 'styled-components'
 
 import { Avatar, message } from 'antd'
 import { UserOutlined, LogoutOutlined } from '@ant-design/icons'
-import { useHistory } from 'react-router'
+import { useNavigate } from 'react-router-dom'
 import { useUserInfo } from '../utils/hooks'
 import fetchData from '../utils/fetch'
 import { BASEURL } from '../config'
 
 export default function Navbar() {
-  const history = useHistory()
+  const navigate = useNavigate()
   const [userInfo] = useUserInfo()
 
   const HandleLogout = () => {
     const token = localStorage.getItem('token')
     fetchData(`${BASEURL}/api/v1/auth/logout`, 'GET', { token })
       .then(() => localStorage.clear())
-      .then(() => history.go(0))
+      .then(() => navigate('/'))
   }
 
   return (
@@ -30,22 +30,22 @@ export default function Navbar() {
           <div id="navList">
             <ul className="disableDefaultListStyle">
               <li>
-                <NavLink to="/" activeClassName="currentPage">
+                <NavLink to="/">
                   <span>博客</span>
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/" activeClassName="currentPage">
+                <NavLink to="/">
                   <span onClick={() => message.warn('很抱歉！前方依然在施工哦，以后再来吧！')}>时间轴</span>
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/" activeClassName="currentPage">
+                <NavLink to="/">
                   <span onClick={() => message.warn('很抱歉！前方依然在施工哦，以后再来吧！')}>小工具</span>
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/" activeClassName="currentPage">
+                <NavLink to="/">
                   <span onClick={() => message.warn('很抱歉！前方依然在施工哦，以后再来吧！')}>关于</span>
                 </NavLink>
               </li>
@@ -62,7 +62,7 @@ export default function Navbar() {
                   </ul>
                 </div>
               ) : (
-                <span id="loginBtn" onClick={() => history.push('/login')}>
+                <span id="loginBtn" onClick={() => navigate('/login')}>
                   登录
                 </span>
               )}
