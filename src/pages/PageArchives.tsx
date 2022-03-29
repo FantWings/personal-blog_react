@@ -127,7 +127,7 @@ function ArchiveTools({ archId, author_uuid }: { archId: string | undefined; aut
       {author_uuid === userInfo?.uuid && (
         <ul id="AdminTools" className="disableDefaultListStyle">
           <Tooltip placement="top" title="编辑文章">
-            <li onClick={() => navigate('/edit', { state: { edit: true, archId } })}>
+            <li onClick={() => navigate(`/edit?archId=${archId}&edit=true`)}>
               <EditOutlined />
             </li>
           </Tooltip>
