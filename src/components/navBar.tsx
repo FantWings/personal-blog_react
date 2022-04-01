@@ -31,12 +31,12 @@ export default function Navbar() {
             <ul className="disableDefaultListStyle">
               <li>
                 <NavLink to="/">
-                  <span>博客</span>
+                  <span>主页</span>
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/">
-                  <span onClick={() => message.warn('很抱歉！前方依然在施工哦，以后再来吧！')}>时间轴</span>
+                <NavLink to="/blog">
+                  <span>博客</span>
                 </NavLink>
               </li>
               <li>

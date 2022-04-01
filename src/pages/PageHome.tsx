@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useState } from 'react'
 import styled from 'styled-components'
+import { Divider, Avatar } from 'antd'
 
 import { ThemeColor } from '../utils/constent'
 import { archiveListsInterface } from '../utils/interfaces'
@@ -9,7 +10,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { BASEURL } from '../config'
 // import Widges from '../components/widges'
 import TagGroup from '../components/tagGroup'
-import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
+import { LoadingOutlined, PlusOutlined, UserOutlined } from '@ant-design/icons'
 import { useUserInfo } from '../utils/hooks'
 
 export default function PageHome() {
@@ -59,88 +60,206 @@ export default function PageHome() {
   }
 
   return (
-    <>
-      {/* {localStorage.getItem('loggedIn') && localStorage.getItem('email') === '' && (
-        <NoticeBar>
-          <span>
-            您需要验证您的邮箱才可以发布回复、订阅、留言等操作。 <span id="verifyBtn">前往验证</span>
-          </span>
-        </NoticeBar>
-      )} */}
-      <ArchivesContianer>
-        {userInfo?.is_admin === 1 && (
-          <AddArchive onClick={() => navigate('/add', { state: { edit: false } })}>
-            <PlusOutlined />
-            <span>撰写新文章</span>
-          </AddArchive>
-        )}
-        {data.map(
-          ({ id, cover_image, title, preview, views, time_for_read, update_time, tags }: archiveListsInterface) => {
-            return (
-              <ArchivesPreview key={id}>
-                <div className="body">
-                  <div className="image">
+    <Body>
+      <div className="main-left">
+        <Container>
+          <div className="ContainerBlock">
+            <span className="title">档案馆</span>
+            <span className="subtitle">Library</span>
+          </div>
+          <Divider dashed style={{ margin: 0 }} />
+          <div className="ContainerBlock">
+            {data.map((data: archiveListsInterface) => {
+              const { title, id, update_time, views } = data
+              return (
+                <Posts>
+                  <div className="post-title">
                     <span
-                      style={{
-                        backgroundImage: `url(${cover_image || 'thumbnail.png'})`,
+                      className="title"
+                      onClick={() => {
+                        navigate(`/archives/${id}`)
                       }}
-                    />
-                  </div>
-                  <div className="content">
-                    <Link className="title" to={`/archives/${id}`}>
+                    >
                       {title}
-                    </Link>
-                    <div className="text">{preview}</div>
+                    </span>
                   </div>
-                </div>
-                <div className="footer">
-                  <ul className="info disableDefaultListStyle">
-                    <li>阅读量：{views}</li>
-                    <li>阅读时间：{time_for_read}分钟</li>
-                    <li>最后更新：{new Date(update_time).toLocaleString()}</li>
-                  </ul>
-                  <TagGroup tags={tags} handleUpdate={filterByTags} />
-                </div>
-              </ArchivesPreview>
-            )
-          }
-        )}
-        <Loadmore style={{ cursor: loading ? 'wait' : 'pointer' }} onClick={() => loadMore()}>
-          {loading ? (
-            <span>
-              <LoadingOutlined />
-              &nbsp;正在加载
-            </span>
-          ) : (
-            '加载更多'
-          )}
-        </Loadmore>
-      </ArchivesContianer>
-      {/* <WidgesContainer>
-        <Widges title="标签筛选">
-          <TagGroup tags={tags} handleUpdate={filterByTags} style={{ marginBottom: '1em' }} />
-        </Widges>
-      </WidgesContainer> */}
-    </>
+                  <div className="post-info">
+                    <div className="data-set">
+                      <span>发布于 {update_time}</span>
+                      <span>最后回复在23小时前</span>
+                    </div>
+                    <div className="icon-set">
+                      <span>阅读：{views}</span>
+                      <span>评论：{0}</span>
+                    </div>
+                  </div>
+                </Posts>
+              )
+            })}
+          </div>
+        </Container>
+      </div>
+      <div className="main-right">
+        <Container className="margin_bottom">
+          <div id="addNewBlog">
+            <span id="btn_addnew">撰写一个新文章</span>
+          </div>
+        </Container>
+        <Container className="margin_bottom">
+          <div id="userCard">
+            <div id="info">
+              <span id="avatar">
+                <Avatar size={64} icon={<UserOutlined />} />
+              </span>
+              <span id="username">用户昵称</span>
+              <span id="email">username@domain.com</span>
+            </div>
+            <div id="user_oprate">
+              <ul>
+                <li>编辑资料</li>
+              </ul>
+            </div>
+          </div>
+        </Container>
+      </div>
+    </Body>
   )
 }
 
-// const NoticeBar = styled.div`
-//   flex: 1 100%;
-//   padding: 0.75em;
-//   margin-bottom: 0.75em;
-//   background-color: #fff2cf;
-//   color: #d8b550;
-//   order: 10;
-//   span#verifyBtn {
-//     color: #909eff;
-//     transition: all 0.3s;
-//     :hover {
-//       color: #7c8efd;
-//       cursor: pointer;
-//     }
-//   }
-// `
+const Body = styled.div`
+  margin: 0 auto;
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  width: 75%;
+  min-width: 760px;
+  div.main-left {
+    width: calc(100% - 310px);
+  }
+  div.main-right {
+    width: 300px;
+  }
+`
+
+const Container = styled.div`
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 1px 1px #333;
+  box-shadow: 0px 2px 4px 0px #e9e9e9; // 上边距
+  &.margin_top {
+    margin-top: 10px;
+  }
+  // 下边距
+  &.margin_bottom {
+    margin-bottom: 10px;
+  }
+  // 添加新文章
+  div#addNewBlog {
+    padding: 16px;
+    span#btn_addnew {
+      transition: 0.3s;
+      display: block;
+      margin: 2px;
+      padding: 16px;
+      background-color: #4085f4;
+      color: #fff;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 0px 2px 4px 0px #c5ddff;
+      :hover {
+        background-color: #76aaff;
+      }
+      :active {
+        background-color: #3670ce;
+      }
+    }
+  }
+  // 用户卡
+  #userCard {
+    padding: 32px 0;
+    #info {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      #avatar {
+        margin: 16px;
+      }
+      #username {
+        flex: 1 100%;
+        text-align: center;
+      }
+      #email {
+        flex: 1 100%;
+        text-align: center;
+        font-size: 12px;
+      }
+    }
+    #user_oprate {
+      padding-top: 32px;
+      ul {
+        list-style: none;
+        text-align: center;
+        display: flex;
+        justify-content: space-evenly;
+        padding: 0;
+        li {
+          color: #4085f4;
+          cursor: pointer;
+          transition: 0.3s;
+          :hover {
+            color: #76aaff;
+          }
+        }
+      }
+    }
+  }
+  // 主页内容模块
+  div.ContainerBlock {
+    padding: 16px;
+    span.title {
+      font-size: 1.75em;
+      font-weight: 500;
+      margin-right: 5px;
+    }
+    span.subtitle {
+      color: #a4a4a4;
+      margin-left: 5px;
+    }
+  }
+`
+
+const Posts = styled.div`
+  padding: 12px;
+  div.post-title {
+    display: flex;
+    span.title {
+      font-size: 18px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-bottom: 4px;
+      :hover {
+        color: #1f75ff;
+      }
+    }
+  }
+  div.post-info {
+    display: flex;
+    justify-content: space-between;
+    color: #a4a4a4;
+    div.data-set {
+      span {
+        margin-right: 12px;
+      }
+    }
+    div.icon-set {
+      span {
+        margin-right: 12px;
+      }
+    }
+  }
+`
 
 const ArchivesContianer = styled.div`
   order: 20;

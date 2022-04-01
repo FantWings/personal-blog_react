@@ -57,19 +57,19 @@ export function MainPage() {
 }
 
 const PageContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
+  /* display: flex; */
+  /* flex-wrap: wrap; */
   //body高度 = 100视口 - 64导航栏高度 - 64页脚高度
   min-height: calc(100vh - 64px - 64px);
   box-sizing: border-box;
   max-width: 100vw;
   margin: 0 auto;
   padding: 16px;
-  @media all and (min-width: 768px) {
-    justify-content: center;
+  /* @media all and (min-width: 768px) {
+    justify-content: space-between;
     padding: 25px;
     max-width: 1200px;
-  }
+  } */
   /* @media all and (max-width: 768px) {
     flex-wrap: wrap;
     flex-direction: column-reverse;
