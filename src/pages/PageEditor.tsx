@@ -25,8 +25,17 @@ export default function PageEditer() {
   const isEdit = searchParams.get('edit')
   const archId = searchParams.get('archId')
 
-  // 如果是编辑模式，向服务器获取编辑模式下对应的文章数据，查询参archId
+  useEffect(() => {
+    const currentTime = new Date().getTime()
+    console.log(currentTime, localStorage.getItem('vaild_time'))
+    if (!localStorage.getItem('token')) return navigate('/login')
+    if (currentTime > Number(localStorage.getItem('vaild_time'))) {
+      console.log('loginExpired')
+      return navigate('/login')
+    }
+  })
 
+  // 如果是编辑模式，向服务器获取编辑模式下对应的文章数据，查询参archId
   useEffect(() => {
     isEdit &&
       fetchData(`${BASEURL}/api/v1/archive/getDetail/${archId}`, 'GET')

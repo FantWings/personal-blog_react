@@ -56,9 +56,11 @@ function LoginForm() {
       username,
       password,
     })
-      .then(({ token }) => {
+      .then(({ token, vaild_time }) => {
         // 登录成功，将token写入localStorge
         localStorage.setItem('token', token)
+        // 将过期时间写入localstorge
+        localStorage.setItem('vaild_time', vaild_time)
         // 登录成功，更新登录标
         localStorage.setItem('loggedIn', 'true')
         // 登录成功，获取用户信息

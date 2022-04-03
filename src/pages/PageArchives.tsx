@@ -165,10 +165,11 @@ function ArchiveComment({ archId }: { archId: string | undefined }) {
   }, [archId])
 
   const HandleSubmitComment = () => {
-    setSubmitting(true)
     if (!commentText) {
       return message.warn('评论不可为空')
     }
+
+    setSubmitting(true)
     const token = localStorage.getItem('token')
     fetchData(`${BASEURL}/api/v1/archive/comment?archId=${archId}`, 'POST', { token }, { comment: commentText })
       .then(() => {
@@ -226,27 +227,29 @@ function ArchiveComment({ archId }: { archId: string | undefined }) {
           const { id, avatar, comment, nickname, time, owner } = value
           return (
             <div className="commentItems" key={id}>
-              <div className="userAvatar">
-                <Avatar src={avatar} size={48} />
-              </div>
-              <div className="commentContent">
+              <div className="commentUserInfo">
+                <div className="userAvatar">
+                  <Avatar src={avatar} size={48} />
+                </div>
                 <div>
                   <span className="userNickName">{nickname}</span>
                   <span className="commentTime">{new Date(time).toLocaleString()}</span>
                 </div>
+              </div>
+              <div className="commentContent">
                 <div className="commentText">
                   <span>{comment}</span>
-                  {userInfo && (
-                    <div className="comment_control">
-                      <span className="textBtn">回复</span>
-                      {(userInfo.is_admin === 1 || userInfo.uuid === owner) && (
-                        <span className="textBtn" onClick={() => handleDeleteComment(id)}>
-                          删除
-                        </span>
-                      )}
-                    </div>
-                  )}
                 </div>
+                {userInfo && (
+                  <div className="comment_control">
+                    <span className="textBtn">回复</span>
+                    {(userInfo.is_admin === 1 || userInfo.uuid === owner) && (
+                      <span className="textBtn" onClick={() => handleDeleteComment(id)}>
+                        删除
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
               <Divider dashed />
             </div>
@@ -299,7 +302,8 @@ const markdownComponents = {
 
 const LeftView = styled.div`
   flex: 1;
-  width: 0;
+  max-width: 70%;
+  margin: 0 auto;
 `
 
 const BlogDetail = styled.div`
@@ -558,15 +562,15 @@ const Comment = styled.div`
     }
 
     div.commentItems {
-      display: flex;
+      /* display: flex; */
       padding: 1em;
-      flex-wrap: wrap;
-      div.userAvatar {
-        margin-right: 1em;
-      }
-      div.commentContent {
+      /* flex-wrap: wrap; */
+
+      div.commentUserInfo {
         display: flex;
-        flex-direction: column;
+        div.userAvatar {
+          margin-right: 1em;
+        }
         div {
           span.userNickName {
             display: block;
@@ -577,13 +581,20 @@ const Comment = styled.div`
             color: #acacac;
           }
         }
+      }
+
+      div.commentContent {
+        display: flex;
+        flex-direction: column;
+        padding: 1em;
+
         div.commentText {
           flex: 1 100%;
-          margin-top: 1.25em;
-          div.comment_control {
-            margin-top: 1em;
-            color: gray;
-          }
+          padding: 1em 0 1.25em 0;
+        }
+
+        div.comment_control {
+          color: gray;
         }
       }
     }

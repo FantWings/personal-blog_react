@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { Divider, Avatar } from 'antd'
 
 import { ThemeColor } from '../utils/constent'
-import { archiveListsInterface } from '../utils/interfaces'
+import { archiveListsInterface, userDataInterface } from '../utils/interfaces'
 import fetchData from '../utils/fetch'
 import { Link, useNavigate } from 'react-router-dom'
 import { BASEURL } from '../config'
@@ -12,11 +12,14 @@ import { BASEURL } from '../config'
 import TagGroup from '../components/tagGroup'
 import { LoadingOutlined, PlusOutlined, UserOutlined } from '@ant-design/icons'
 import { useUserInfo } from '../utils/hooks'
+import { JsxChild, JsxText } from 'typescript'
+import { ReactElement } from 'react-markdown/lib/react-markdown'
 
 export default function PageHome() {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState<Array<archiveListsInterface>>([])
+  const [userInfo] = useUserInfo()
   // const [tags, setTags] = useState([])
   // const [role, setRole] = useState(0)
 
@@ -25,8 +28,6 @@ export default function PageHome() {
   //     ({ data: role }) => setRole(role)
   //   )
   // }, [])
-
-  const [userInfo] = useUserInfo()
 
   useEffect(() => {
     setLoading(true)
@@ -62,12 +63,7 @@ export default function PageHome() {
   return (
     <Body>
       <div className="main-left">
-        <Container>
-          <div className="ContainerBlock">
-            <span className="title">档案馆</span>
-            <span className="subtitle">Library</span>
-          </div>
-          <Divider dashed style={{ margin: 0 }} />
+        <UnifyContaner title="档案馆" subtitle="Library">
           <div className="ContainerBlock">
             {data.map((data: archiveListsInterface) => {
               const { title, id, update_time, views } = data
@@ -85,7 +81,7 @@ export default function PageHome() {
                   </div>
                   <div className="post-info">
                     <div className="data-set">
-                      <span>发布于 {update_time}</span>
+                      <span>发布于 {new Date(update_time).toLocaleString()}</span>
                       <span>最后回复在23小时前</span>
                     </div>
                     <div className="icon-set">
@@ -97,22 +93,27 @@ export default function PageHome() {
               )
             })}
           </div>
-        </Container>
+        </UnifyContaner>
       </div>
+
       <div className="main-right">
-        <Container className="margin_bottom">
-          <div id="addNewBlog">
-            <span id="btn_addnew">撰写一个新文章</span>
-          </div>
-        </Container>
+        {userInfo && (
+          <Container className="margin_bottom">
+            <div id="addNewBlog">
+              <span id="btn_addnew" onClick={() => navigate('/edit')}>
+                撰写一个新文章
+              </span>
+            </div>
+          </Container>
+        )}
         <Container className="margin_bottom">
           <div id="userCard">
             <div id="info">
               <span id="avatar">
-                <Avatar size={64} icon={<UserOutlined />} />
+                <Avatar size={64} icon={<UserOutlined />} src={userInfo?.avatar} />
               </span>
-              <span id="username">用户昵称</span>
-              <span id="email">username@domain.com</span>
+              <span id="username">{userInfo?.nickname || '未登录'}</span>
+              {userInfo && <span id="email">{userInfo?.email.addr}</span>}
             </div>
             <div id="user_oprate">
               <ul>
@@ -123,6 +124,19 @@ export default function PageHome() {
         </Container>
       </div>
     </Body>
+  )
+}
+
+function UnifyContaner(props: any) {
+  return (
+    <Container>
+      <div className="ContainerBlock">
+        <span className="title">{props.title}</span>
+        <span className="subtitle">{props.subtitle}</span>
+      </div>
+      <Divider dashed style={{ margin: 0 }} />
+      <>{props.children}</>
+    </Container>
   )
 }
 

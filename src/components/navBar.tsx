@@ -16,7 +16,7 @@ export default function Navbar() {
     const token = localStorage.getItem('token')
     fetchData(`${BASEURL}/api/v1/auth/logout`, 'GET', { token })
       .then(() => localStorage.clear())
-      .then(() => navigate('/'))
+      .then(() => window.location.reload())
   }
 
   return (
