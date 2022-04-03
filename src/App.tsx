@@ -7,7 +7,6 @@ import PageHome from './pages/PageHome'
 import PageArchives from './pages/PageArchives'
 import PageEditer from './pages/PageEditor'
 import PageLogin from './pages/PageLogin'
-import PageTest from './pages/PageTest'
 import Navbar from './components/navBar'
 import Footer from './components/footer'
 
@@ -24,7 +23,6 @@ export function MainPage() {
           <Route path="/" element={<PageHome />}></Route>
           <Route path="/archives/:archId" element={<PageArchives />}></Route>
           <Route path="/edit" element={<PageEditer />}></Route>
-          <Route path="/test" element={<PageTest />}></Route>
         </Routes>
       </PageContainer>
       <Footer />
