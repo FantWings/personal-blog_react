@@ -39,7 +39,7 @@ const AuthProvider = (props: any) => {
   })
 
   useEffect(() => {
-    if (token != '' && expTime > new Date().getTime()) {
+    if (token !== '' && expTime > new Date().getTime()) {
       fetchData(`${BASEURL}/api/v1/user/userInfo`, 'GET', { token: token })
         .then((userInfoData: userDataInterface) => setUserInfo(userInfoData))
         .then(() => {
