@@ -46,7 +46,7 @@ const AuthProvider = (props: any) => {
           setLoggedIn(true)
         })
     } else setLoggedIn(false)
-  }, [token])
+  }, [token, expTime])
 
   return <AuthContext.Provider value={{ token, userInfo, loggedIn }} {...props} />
 }
