@@ -16,7 +16,8 @@ export default function PageHome() {
   const [loading, setLoading] = useState(false)
   const [data, setData] = useState<Array<archiveListsInterface>>([])
   const {
-    userInfo: { uuid, nickname, avatar, email },
+    userInfo: { nickname, avatar, email },
+    loggedIn,
   } = useContext(AuthContext)
 
   // 首屏获取数据
@@ -83,7 +84,7 @@ export default function PageHome() {
       </div>
 
       <div className="main-right">
-        {uuid && (
+        {loggedIn && (
           <Container className="margin_bottom">
             <div id="addNewBlog">
               <div id="btn_addnew" onClick={() => navigate('/edit')}>
@@ -263,158 +264,3 @@ const Posts = styled.div`
     }
   }
 `
-
-const ArchivesContianer = styled.div`
-  order: 20;
-  flex: 1;
-  flex-wrap: wrap;
-  @media all and (max-width: 768px) {
-    flex-basis: 100%;
-  }
-`
-
-const AddArchive = styled.div`
-  height: 64px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: transparent;
-  color: ${ThemeColor.gray};
-  cursor: pointer;
-  transition: 0.3s;
-  margin-bottom: 1em;
-  border: 1px dashed ${ThemeColor.gray};
-  :hover {
-    color: ${ThemeColor.dark};
-  }
-  span {
-    margin: 2px;
-  }
-`
-
-const ArchivesPreview = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  background-color: #fff;
-  padding: 1rem;
-  border-radius: 0.25rem;
-  margin-bottom: 10px;
-  transition: 0.3s;
-  max-width: 100vw;
-  :hover {
-    box-shadow: 0px 0px 10px 5px #f0f0f0;
-  }
-  .body {
-    display: flex;
-    flex-wrap: wrap;
-    margin-bottom: 0.8em;
-    .image {
-      @media all and (max-width: 768px) {
-        display: none;
-      }
-      background-size: cover;
-      border-radius: 0.15rem;
-      overflow: hidden;
-      span {
-        display: block;
-
-        height: 100%;
-        min-height: 128px;
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-position: 50% 50%;
-        background-color: rgba(120, 120, 120, 0.1);
-        @media all and (max-width: 768px) {
-          width: 120px;
-        }
-        @media all and (min-width: 769px) {
-          width: 200px;
-        }
-      }
-    }
-    .content {
-      display: block;
-      flex-wrap: wrap;
-      padding: 0 0.5rem;
-      flex: 1;
-      a.title {
-        display: block;
-        margin-bottom: 0.25em;
-        font-weight: 600;
-        font-size: 1.25rem;
-        transition: 0.3s;
-        color: ${ThemeColor.dark};
-        text-decoration: none;
-        :hover {
-          color: #5d96ff;
-          cursor: pointer;
-        }
-      }
-      div.text {
-        display: -webkit-box;
-        font-size: 0.85rem;
-        color: ${ThemeColor.gray};
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 3;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        @media all and (max-width: 454px) {
-          max-width: 80vw;
-        }
-      }
-    }
-  }
-
-  .footer {
-    display: flex;
-    flex: 1 100%;
-    font-size: 0.75rem;
-    color: ${ThemeColor.gray};
-    align-items: flex-end;
-    justify-content: space-between;
-    @media all and (max-width: 414px) {
-      flex-direction: column;
-      align-items: end;
-      ul.tags {
-        margin-top: 0.75em;
-      }
-    }
-    .info {
-      li {
-        margin: 0 0.5em;
-        line-height: 2;
-      }
-    }
-  }
-`
-const Loadmore = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex: 1 100%;
-  height: 64px;
-
-  background-color: #fff;
-  color: ${ThemeColor.gray};
-  cursor: pointer;
-  transition: 0.3s;
-  :hover {
-    color: ${ThemeColor.dark};
-  }
-`
-
-// const WidgesContainer = styled.div`
-//   display: flex;
-//   flex: 1;
-//   min-width: 260px;
-//   @media all and (min-width: 769px) {
-//     order: 30;
-//     margin-left: 10px;
-//     flex: 0.3;
-//   }
-
-//   @media all and (max-width: 768px) {
-//     order: 11;
-//     margin-bottom: 1em;
-//   }
-// `
