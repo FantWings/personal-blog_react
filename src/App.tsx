@@ -1,22 +1,28 @@
-import { Route, Routes } from 'react-router'
-
+import { lazy, Suspense } from 'react'
+import { Route, Routes } from 'react-router-dom'
 import styled from 'styled-components'
-
-// 导入页面
-import PageHome from './pages/PageHome'
-import PageArchives from './pages/PageArchives'
-import PageEditer from './pages/PageEditor'
-import PageLogin from './pages/PageLogin'
-import Navbar from './components/navBar'
-import Footer from './components/footer'
 
 // 导入登录态钩子
 import { AuthProvider } from './context/authContextProvider'
 
+// 导入页面
+import PageHome from './pages/PageHome'
+// import PageArchives from './pages/PageArchives'
+// import PageEditer from './pages/PageEditor'
+// import PageLogin from './pages/PageLogin'
+import Navbar from './components/navBar'
+import Footer from './components/footer'
+
+const PageArchives = lazy(() => import('./pages/PageArchives'))
+const PageEditer = lazy(() => import('./pages/PageEditor'))
+const PageLogin = lazy(() => import('./pages/PageLogin'))
+
 export function LoginPage() {
   return (
     <AuthProvider>
-      <PageLogin />
+      <Suspense fallback={<div />}>
+        <PageLogin />
+      </Suspense>
     </AuthProvider>
   )
 }
@@ -27,11 +33,13 @@ export function MainPage() {
       <AuthProvider>
         <Navbar />
         <PageContainer>
-          <Routes>
-            <Route path="/" element={<PageHome />}></Route>
-            <Route path="/archives/:archId" element={<PageArchives />}></Route>
-            <Route path="/edit" element={<PageEditer />}></Route>
-          </Routes>
+          <Suspense fallback={<div />}>
+            <Routes>
+              <Route path="/" element={<PageHome />}></Route>
+              <Route path="/archives/:archId" element={<PageArchives />}></Route>
+              <Route path="/edit" element={<PageEditer />}></Route>
+            </Routes>
+          </Suspense>
         </PageContainer>
         <Footer />
       </AuthProvider>
