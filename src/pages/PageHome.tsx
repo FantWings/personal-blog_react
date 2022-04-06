@@ -5,7 +5,6 @@ import { Divider, Avatar } from 'antd'
 
 import fetchData from '../utils/fetch'
 import Loading from '../components/loading'
-import { ThemeColor } from '../utils/constent'
 import { archiveListsInterface } from '../utils/interfaces'
 import { BASEURL } from '../config'
 import { PlusOutlined, UserOutlined } from '@ant-design/icons'
