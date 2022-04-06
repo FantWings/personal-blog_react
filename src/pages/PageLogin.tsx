@@ -42,12 +42,12 @@ export default function PageLogin() {
 }
 
 function LoginForm() {
+  const navigate = useNavigate()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [avatar, setAvatar] = useState('')
   const [nickname, setNickname] = useState('')
   const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
 
   const HandleLogin = (e: any) => {
     e.preventDefault()
@@ -56,18 +56,13 @@ function LoginForm() {
       username,
       password,
     })
-      .then(({ token, vaild_time }) => {
+      .then(({ token, expTime }) => {
         // 登录成功，将token写入localStorge
         localStorage.setItem('token', token)
         // 将过期时间写入localstorge
-        localStorage.setItem('vaild_time', vaild_time)
-        // 登录成功，更新登录标
-        localStorage.setItem('loggedIn', 'true')
-        // 登录成功，获取用户信息
-        return fetchData(`${BASEURL}/api/v1/user/userInfo`, 'GET', { token: token })
+        localStorage.setItem('expTime', expTime)
+        navigate(-1)
       })
-      .then((userInfoData: userDataInterface) => localStorage.setItem('userInfo', JSON.stringify(userInfoData)))
-      .then(() => navigate(-1))
       .finally(() => {
         setLoading(false)
       })
@@ -118,7 +113,7 @@ function LoginForm() {
             <input
               type="password"
               name="password"
-              id="password"
+              id="login_password"
               placeholder="密码"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -131,7 +126,7 @@ function LoginForm() {
       </div>
       <button onClick={(e) => HandleLogin(e)}>
         {loading && <LoadingOutlined />}
-        <span style={{ margin: '0 1em' }}>{loading ? '请稍等' : '登录'}</span>
+        <span id="loginText">{loading ? '请稍等' : '登录'}</span>
       </button>
     </CustomForm>
   )
@@ -147,13 +142,13 @@ function RegisterFrom() {
   const [showDescribe, setShowDescribe] = useState(false)
   const [checkPass, setCheckPass] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [buttom, setButtom] = useState('创建账号')
+  const [buttomText, setButtomText] = useState('创建账号')
   const navigate = useNavigate()
 
   const HandleRegister = (e: any) => {
     e.preventDefault()
     setLoading(true)
-    setButtom('正在请求')
+    setButtomText('正在请求')
     // 执行注册操作
     fetchData(`${BASEURL}/api/v1/auth/register`, 'POST', undefined, {
       nickname,
@@ -172,7 +167,7 @@ function RegisterFrom() {
         setLoading(false)
       })
       .catch((e) => {
-        setButtom('再试一次')
+        setButtomText('再试一次')
       })
   }
 
@@ -279,7 +274,7 @@ function RegisterFrom() {
             <input
               type="password"
               name="password"
-              id="password"
+              id="register_password"
               placeholder="密码"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -301,15 +296,9 @@ function RegisterFrom() {
           </div>
         </div>
       </div>
-      <button
-        onClick={(e) => HandleRegister(e)}
-        style={{
-          pointerEvents: checkPass && !loading ? 'unset' : 'none',
-          backgroundColor: checkPass && !loading ? '#333' : '#888',
-        }}
-      >
+      <button onClick={(e) => HandleRegister(e)} className={checkPass ? 'checkPass' : 'checkUnPass'}>
         {loading && <LoadingOutlined />}
-        <span style={{ margin: '0 1em' }}>{buttom}</span>
+        <span>{buttomText}</span>
       </button>
     </CustomForm>
   )
@@ -449,6 +438,17 @@ const CustomForm = styled.form`
     }
     :active {
       transform: scale(0.98);
+    }
+    #loginText {
+      margin-left: 5px;
+    }
+    &.checkPass {
+      pointer-events: unset;
+      background-color: #333;
+    }
+    &.checkUnPass {
+      pointer-events: none;
+      background-color: #9c9c9c;
     }
   }
 `

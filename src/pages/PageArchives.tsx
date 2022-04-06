@@ -1,4 +1,5 @@
 // 导入标准库
+import { useEffect, useState, useContext } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import styled from 'styled-components'
 import Markdown from 'react-markdown'
@@ -18,13 +19,10 @@ import {
 import { Tooltip, Divider, message, Popconfirm, Avatar } from 'antd'
 
 import { ThemeColor } from '../utils/constent'
-// import Widges from '../components/widges'
-// import IconButton from '../components/iconButton'
-import { useEffect, useState } from 'react'
 import fetchData from '../utils/fetch'
 import { archiveInterface, commentsInterface } from '../utils/interfaces'
 import { BASEURL } from '../config'
-import { useUserInfo } from '../utils/hooks'
+import { AuthContext } from '../context/authContextProvider'
 
 export default function PageArchives() {
   // 从URL获取文档ID
@@ -55,7 +53,7 @@ export default function PageArchives() {
         <BlogDetail>
           <div id="head">
             <div id="titleBlock">
-              <span id="title" className="textHidden-singleLine-if-overflow">
+              <span id="post_title" className="textHidden-singleLine-if-overflow">
                 {title}
               </span>
               <span id="lastupdate">{new Date(createTime).toLocaleString()}</span>
@@ -82,7 +80,9 @@ export default function PageArchives() {
 function ArchiveTools({ archId, author_uuid }: { archId: string | undefined; author_uuid: string | undefined }) {
   // 博客工具栏
   const navigate = useNavigate()
-  const [userInfo] = useUserInfo()
+  const {
+    userInfo: { uuid },
+  } = useContext(AuthContext)
 
   // 拷贝链接到剪贴板
   const copyArchiveLink = () => {
@@ -110,21 +110,21 @@ function ArchiveTools({ archId, author_uuid }: { archId: string | undefined; aut
   return (
     <div className="tools">
       <ul id="userTools" className="disableDefaultListStyle">
-        <div className="archiveQRCode">
-          <div className="QRContent">
-            <QRCode value={window.location.href} size={100} />
-          </div>
-          <li>
+        <li>
+          <div className="archiveQRCode">
+            <div className="QRContent">
+              <QRCode value={window.location.href} size={100} />
+            </div>
             <QrcodeOutlined />
-          </li>
-        </div>
+          </div>
+        </li>
         <Tooltip placement="top" title="复制文章链接">
           <li onClick={copyArchiveLink}>
             <LinkOutlined />
           </li>
         </Tooltip>
       </ul>
-      {author_uuid === userInfo?.uuid && (
+      {author_uuid === uuid && (
         <ul id="AdminTools" className="disableDefaultListStyle">
           <Tooltip placement="top" title="编辑文章">
             <li onClick={() => navigate(`/edit?archId=${archId}&edit=true`)}>
@@ -156,7 +156,10 @@ function ArchiveComment({ archId }: { archId: string | undefined }) {
   const [submitting, setSubmitting] = useState(false)
   const [commentText, setCommentText] = useState('')
   const [comments, setComments] = useState<Array<commentsInterface>>([])
-  const [userInfo] = useUserInfo()
+  const {
+    loggedIn,
+    userInfo: { is_admin, uuid },
+  } = useContext(AuthContext)
 
   useEffect(() => {
     fetchData(`${BASEURL}/api/v1/archive/comment?archId=${archId}`, 'GET').then((data: Array<commentsInterface>) =>
@@ -203,17 +206,17 @@ function ArchiveComment({ archId }: { archId: string | undefined }) {
           <textarea
             name="comment"
             id="commentInputArea"
-            placeholder={!userInfo ? '您需要登录才可进行留言噢！' : '有疑问或者错误的地方？在此输入您的留言吧！'}
+            placeholder={!loggedIn ? '您需要登录才可进行留言噢！' : '有疑问或者错误的地方？在此输入您的留言吧！'}
             onChange={(e) => setCommentText(e.target.value)}
             value={commentText}
-            disabled={!userInfo}
+            disabled={!loggedIn}
           />
         </form>
         <div>
           <button
             onClick={() => HandleSubmitComment()}
-            className={submitting || !userInfo ? 'disabled' : undefined}
-            disabled={!userInfo}
+            className={submitting || !loggedIn ? 'disabled' : undefined}
+            disabled={!loggedIn}
           >
             {submitting && <LoadingOutlined style={{ marginRight: '0.5em' }} />}
             {submitting ? '发送中' : '提交留言'}
@@ -240,10 +243,10 @@ function ArchiveComment({ archId }: { archId: string | undefined }) {
                 <div className="commentText">
                   <span>{comment}</span>
                 </div>
-                {userInfo && (
+                {loggedIn && (
                   <div className="comment_control">
                     <span className="textBtn">回复</span>
-                    {(userInfo.is_admin === 1 || userInfo.uuid === owner) && (
+                    {(is_admin === 1 || uuid === owner) && (
                       <span className="textBtn" onClick={() => handleDeleteComment(id)}>
                         删除
                       </span>
@@ -323,7 +326,7 @@ const BlogDetail = styled.div`
         width: 0;
         flex: 0.8;
       }
-      span#title {
+      span#post_title {
         font-size: 1.6em;
         font-weight: 600;
       }

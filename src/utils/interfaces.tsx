@@ -3,9 +3,10 @@ export interface archiveListsInterface {
   id: number
   title: string
   preview: string
+  create_time: number
   update_time: number
   views: number
-  comment: number
+  comments: number
   cover_image: string
   tags: Array<string>
   time_for_read: number
@@ -24,7 +25,7 @@ export interface archiveInterface {
 }
 
 export interface userDataInterface {
-  avatar: string
+  avatar: undefined
   email: { addr: string; verifyed: number }
   phone?: number
   qq?: number

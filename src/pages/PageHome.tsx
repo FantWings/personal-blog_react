@@ -1,34 +1,25 @@
-import { useEffect } from 'react'
-import { useState } from 'react'
+import { useEffect, useContext, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import { Divider, Avatar } from 'antd'
 
-import { ThemeColor } from '../utils/constent'
-import { archiveListsInterface, userDataInterface } from '../utils/interfaces'
 import fetchData from '../utils/fetch'
-import { Link, useNavigate } from 'react-router-dom'
+import Loading from '../components/loading'
+import { ThemeColor } from '../utils/constent'
+import { archiveListsInterface } from '../utils/interfaces'
 import { BASEURL } from '../config'
-// import Widges from '../components/widges'
-import TagGroup from '../components/tagGroup'
-import { LoadingOutlined, PlusOutlined, UserOutlined } from '@ant-design/icons'
-import { useUserInfo } from '../utils/hooks'
-import { JsxChild, JsxText } from 'typescript'
-import { ReactElement } from 'react-markdown/lib/react-markdown'
+import { PlusOutlined, UserOutlined } from '@ant-design/icons'
+import { AuthContext } from '../context/authContextProvider'
 
 export default function PageHome() {
   const navigate = useNavigate()
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [data, setData] = useState<Array<archiveListsInterface>>([])
-  const [userInfo] = useUserInfo()
-  // const [tags, setTags] = useState([])
-  // const [role, setRole] = useState(0)
+  const {
+    userInfo: { uuid, nickname, avatar, email },
+  } = useContext(AuthContext)
 
-  // useEffect(() => {
-  //   fetchData(`${BASEURL}/api/v1/user/getRole`, 'GET', { token: localStorage.getItem('token') }).then(
-  //     ({ data: role }) => setRole(role)
-  //   )
-  // }, [])
-
+  // 首屏获取数据
   useEffect(() => {
     setLoading(true)
     fetchData(`${BASEURL}/api/v1/archive/getList`, 'GET')
@@ -38,37 +29,32 @@ export default function PageHome() {
     // 监听URLsearch参数，用于TAG给组件进行触发筛选
   }, [])
 
-  // useEffect(() => {
-  //   fetchData(`${BASEURL}/api/v1/archive/getTags`, 'GET')
-  //     .then((data) => setTags(data))
-  //     .catch(({ msg }) => console.log(`TAG列表获取失败：${msg}`))
-  // }, [])
+  // const loadMore = () => {
+  //   setLoading(true)
+  //   fetchData(`${BASEURL}/api/v1/archive/getList?limit=${data.length + 10}`, 'GET')
+  //     .then((data) => setData(data))
+  //     .finally(() => setLoading(false))
+  //     .catch(({ msg }) => console.log(`博文列表获取失败：${msg}`))
+  // }
 
-  const loadMore = () => {
-    setLoading(true)
-    fetchData(`${BASEURL}/api/v1/archive/getList?limit=${data.length + 10}`, 'GET')
-      .then((data) => setData(data))
-      .finally(() => setLoading(false))
-      .catch(({ msg }) => console.log(`博文列表获取失败：${msg}`))
-  }
-
-  const filterByTags = (tags: string) => {
-    setLoading(true)
-    fetchData(`${BASEURL}/api/v1/archive/getList?filter_by=${tags}`, 'GET')
-      .then((data) => setData(data))
-      .finally(() => setLoading(false))
-      .catch(({ msg }) => console.log(msg))
-  }
+  // const filterByTags = (tags: string) => {
+  //   setLoading(true)
+  //   fetchData(`${BASEURL}/api/v1/archive/getList?filter_by=${tags}`, 'GET')
+  //     .then((data) => setData(data))
+  //     .finally(() => setLoading(false))
+  //     .catch(({ msg }) => console.log(msg))
+  // }
 
   return (
     <Body>
       <div className="main-left">
         <UnifyContaner title="档案馆" subtitle="Library">
           <div className="ContainerBlock">
+            <Loading loading={loading} />
             {data.map((data: archiveListsInterface) => {
-              const { title, id, update_time, views } = data
+              const { title, id, update_time, views, create_time, comments } = data
               return (
-                <Posts>
+                <Posts key={id}>
                   <div className="post-title">
                     <span
                       className="title"
@@ -81,12 +67,12 @@ export default function PageHome() {
                   </div>
                   <div className="post-info">
                     <div className="data-set">
-                      <span>发布于 {new Date(update_time).toLocaleString()}</span>
-                      <span>最后回复在23小时前</span>
+                      <span>发布时间： {new Date(create_time).toLocaleString()}</span>
+                      <span>最后更新：{new Date(update_time).toLocaleString()}</span>
                     </div>
                     <div className="icon-set">
                       <span>阅读：{views}</span>
-                      <span>评论：{0}</span>
+                      <span>评论：{comments}</span>
                     </div>
                   </div>
                 </Posts>
@@ -97,12 +83,13 @@ export default function PageHome() {
       </div>
 
       <div className="main-right">
-        {userInfo && (
+        {uuid && (
           <Container className="margin_bottom">
             <div id="addNewBlog">
-              <span id="btn_addnew" onClick={() => navigate('/edit')}>
-                撰写一个新文章
-              </span>
+              <div id="btn_addnew" onClick={() => navigate('/edit')}>
+                <PlusOutlined style={{ marginRight: '0.5em' }} />
+                <span>撰写一个新文章</span>
+              </div>
             </div>
           </Container>
         )}
@@ -110,10 +97,10 @@ export default function PageHome() {
           <div id="userCard">
             <div id="info">
               <span id="avatar">
-                <Avatar size={64} icon={<UserOutlined />} src={userInfo?.avatar} />
+                <Avatar size={64} icon={<UserOutlined />} src={avatar} />
               </span>
-              <span id="username">{userInfo?.nickname || '未登录'}</span>
-              {userInfo && <span id="email">{userInfo?.email.addr}</span>}
+              <span id="username">{nickname || '未登录'}</span>
+              {<span id="email">{email.addr}</span>}
             </div>
             <div id="user_oprate">
               <ul>
@@ -170,7 +157,7 @@ const Container = styled.div`
   // 添加新文章
   div#addNewBlog {
     padding: 16px;
-    span#btn_addnew {
+    div#btn_addnew {
       transition: 0.3s;
       display: block;
       margin: 2px;
@@ -239,6 +226,8 @@ const Container = styled.div`
     span.subtitle {
       color: #a4a4a4;
       margin-left: 5px;
+    }
+    div#loadingState {
     }
   }
 `

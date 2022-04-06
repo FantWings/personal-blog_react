@@ -10,22 +10,31 @@ import PageLogin from './pages/PageLogin'
 import Navbar from './components/navBar'
 import Footer from './components/footer'
 
+// 导入登录态钩子
+import { AuthProvider } from './context/authContextProvider'
+
 export function LoginPage() {
-  return <PageLogin />
+  return (
+    <AuthProvider>
+      <PageLogin />
+    </AuthProvider>
+  )
 }
 
 export function MainPage() {
   return (
     <div className="App">
-      <Navbar />
-      <PageContainer>
-        <Routes>
-          <Route path="/" element={<PageHome />}></Route>
-          <Route path="/archives/:archId" element={<PageArchives />}></Route>
-          <Route path="/edit" element={<PageEditer />}></Route>
-        </Routes>
-      </PageContainer>
-      <Footer />
+      <AuthProvider>
+        <Navbar />
+        <PageContainer>
+          <Routes>
+            <Route path="/" element={<PageHome />}></Route>
+            <Route path="/archives/:archId" element={<PageArchives />}></Route>
+            <Route path="/edit" element={<PageEditer />}></Route>
+          </Routes>
+        </PageContainer>
+        <Footer />
+      </AuthProvider>
     </div>
   )
 }

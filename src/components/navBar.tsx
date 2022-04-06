@@ -1,16 +1,19 @@
+import { useContext } from 'react'
 import { NavLink } from 'react-router-dom'
 import styled from 'styled-components'
 
+import { AuthContext } from '../context/authContextProvider'
 import { Avatar, message } from 'antd'
 import { UserOutlined, LogoutOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
-import { useUserInfo } from '../utils/hooks'
 import fetchData from '../utils/fetch'
 import { BASEURL } from '../config'
 
 export default function Navbar() {
   const navigate = useNavigate()
-  const [userInfo] = useUserInfo()
+  const {
+    userInfo: { uuid, avatar },
+  } = useContext(AuthContext)
 
   const HandleLogout = () => {
     const token = localStorage.getItem('token')
@@ -51,9 +54,9 @@ export default function Navbar() {
               </li>
             </ul>
             <div id="userBlock">
-              {userInfo ? (
+              {uuid ? (
                 <div className="user-dropdown">
-                  <Avatar icon={!userInfo && <UserOutlined />} src={userInfo.avatar} />
+                  <Avatar icon={<UserOutlined />} src={avatar} />
                   <ul className="dropdown-content">
                     <li onClick={() => HandleLogout()}>
                       <LogoutOutlined />

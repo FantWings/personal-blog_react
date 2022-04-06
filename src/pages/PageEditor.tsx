@@ -1,20 +1,21 @@
+import { useState, useEffect, useContext } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import MdEditor from 'react-markdown-editor-lite'
 import Markdown from 'react-markdown'
 import gfm from 'remark-gfm'
+import styled from 'styled-components'
+import { message } from 'antd'
 
 import 'react-markdown-editor-lite/lib/index.css'
-import { useState } from 'react'
-import { useEffect } from 'react'
 import fetchData from '../utils/fetch'
 import { BASEURL } from '../config'
 import { ThemeColor } from '../utils/constent'
-import styled from 'styled-components'
-import { message } from 'antd'
 import { archiveInterface } from '../utils/interfaces'
 import { CloseOutlined } from '@ant-design/icons'
+import { AuthContext } from '../context/authContextProvider'
 
 export default function PageEditer() {
+  const { loggedIn } = useContext(AuthContext)
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const [content, setContent] = useState('')
@@ -25,14 +26,9 @@ export default function PageEditer() {
   const isEdit = searchParams.get('edit')
   const archId = searchParams.get('archId')
 
+  // 检测是否登录，未登录重定向到登录界面
   useEffect(() => {
-    const currentTime = new Date().getTime()
-    console.log(currentTime, localStorage.getItem('vaild_time'))
-    if (!localStorage.getItem('token')) return navigate('/login')
-    if (currentTime > Number(localStorage.getItem('vaild_time'))) {
-      console.log('loginExpired')
-      return navigate('/login')
-    }
+    if (!loggedIn) navigate('/login')
   })
 
   // 如果是编辑模式，向服务器获取编辑模式下对应的文章数据，查询参archId
@@ -104,7 +100,7 @@ export default function PageEditer() {
 
   // 页面主体
   return (
-    <div style={{ width: '100%' }}>
+    <div>
       <EditContainer>
         <div id="title">
           <span>{isEdit ? '编辑文章' : '撰写新文章'}</span>
@@ -134,6 +130,7 @@ export default function PageEditer() {
               id="coverImage"
               onChange={(e) => setCoverImage(e.target.value)}
               value={coverImage}
+              placeholder="https://"
             />
           </div>
           <div className="extraContent">
@@ -145,6 +142,7 @@ export default function PageEditer() {
               onKeyPress={(e) => handleKeyPress(e)}
               value={tagsFormText}
               onChange={(e) => setTagsFromText(e.target.value)}
+              placeholder="输入后按下回车添加"
             />
             <div id="tagsGroup">
               {tags.map((tag, index) => {
