@@ -1,8 +1,7 @@
 import styled from 'styled-components'
 import { ThemeColor } from '../utils/constent'
 
-export default function IconButton(props: { icon: any; text: string }) {
-  const { icon, text } = props
+export default function IconButton({ icon, text }: { icon: any; text: string }) {
   return (
     <Shell>
       {icon ? icon : <span className="icon" />}

@@ -1,10 +1,16 @@
 import styled from 'styled-components'
 import { ThemeColor } from '../utils/constent'
 
-export default function TagGroup(props: { tags: Array<string>; style?: object; handleUpdate: Function }) {
+export default function TagGroup({
+  tags,
+  style,
+  handleUpdate,
+}: {
+  tags: Array<string>
+  style?: object
+  handleUpdate: Function
+}) {
   // TAG组件
-  const { tags, style, handleUpdate } = props
-
   return (
     <ul className="tags disableDefaultListStyle">
       {tags &&

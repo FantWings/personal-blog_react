@@ -1,18 +1,14 @@
 import styled from 'styled-components'
 import { LoadingOutlined } from '@ant-design/icons'
 
-export default function Loading(props: any) {
+export default function Loading({ loading = false, children }: { loading: boolean; children?: Element }) {
   return (
     <Body>
-      <>
-        {props.loading && (
-          <div className="loadingBlock">
-            <LoadingOutlined />
-            <div>请稍等</div>
-          </div>
-        )}
-      </>
-      <>{props.children}</>
+      <div className="loadingBlock" style={{ display: loading ? 'block' : 'none' }}>
+        <LoadingOutlined />
+        <div>请稍等</div>
+      </div>
+      {children}
     </Body>
   )
 }
