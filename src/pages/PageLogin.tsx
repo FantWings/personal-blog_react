@@ -107,7 +107,13 @@ export default function PageLogin() {
                   onBlur={() => HandleGetAvatar()}
                 />
                 {smsLogin && (
-                  <span className="get_sms_code" onClick={() => HandleGetSms()}>
+                  <span
+                    className="get_sms_code"
+                    onClick={() => HandleGetSms()}
+                    style={{
+                      pointerEvents: smsCoolDownTime ? "none" : "unset",
+                    }}
+                  >
                     {smsCoolDownTime === 60
                       ? "获取验证码"
                       : `${smsCoolDownTime} 秒后重新获取`}
@@ -180,6 +186,7 @@ const LoginContainer = styled.div`
   overflow: hidden;
   @media all and (min-width: 768px) {
     max-width: 400px;
+    height: 350px;
   }
   @media all and (max-width: 768px) {
     flex: 1;
