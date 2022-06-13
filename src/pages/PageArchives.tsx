@@ -40,7 +40,7 @@ export default function PageArchives() {
   })
 
   useEffect(() => {
-    fetchData(`${BASEURL}/api/v1/archive/getDetail/${archId}`, 'GET').then((data: archiveInterface) => {
+    fetchData(`${BASEURL}/v1/archive/getDetail/${archId}`, 'GET').then((data: archiveInterface) => {
       setData(data)
     })
   }, [archId])
@@ -94,7 +94,7 @@ function ArchiveTools({ archId, author_uuid }: { archId: string | undefined; aut
   }
 
   const HandleArchiveDelete = () => {
-    fetchData(`${BASEURL}/api/v1/archive/delete?archId=${archId}`, 'POST', {
+    fetchData(`${BASEURL}/v1/archive/delete?archId=${archId}`, 'POST', {
       token: localStorage.getItem('token'),
     }).then(
       () => {
@@ -162,7 +162,7 @@ function ArchiveComment({ archId }: { archId: string | undefined }) {
   } = useContext(AuthContext)
 
   useEffect(() => {
-    fetchData(`${BASEURL}/api/v1/archive/comment?archId=${archId}`, 'GET').then((data: Array<commentsInterface>) =>
+    fetchData(`${BASEURL}/v1/archive/comment?archId=${archId}`, 'GET').then((data: Array<commentsInterface>) =>
       setComments(data)
     )
   }, [archId])
@@ -174,9 +174,9 @@ function ArchiveComment({ archId }: { archId: string | undefined }) {
 
     setSubmitting(true)
     const token = localStorage.getItem('token')
-    fetchData(`${BASEURL}/api/v1/archive/comment?archId=${archId}`, 'POST', { token }, { comment: commentText })
+    fetchData(`${BASEURL}/v1/archive/comment?archId=${archId}`, 'POST', { token }, { comment: commentText })
       .then(() => {
-        return fetchData(`${BASEURL}/api/v1/archive/comment?archId=${archId}`, 'GET')
+        return fetchData(`${BASEURL}/v1/archive/comment?archId=${archId}`, 'GET')
       })
       .then((data: Array<commentsInterface>) => {
         setComments(data)
@@ -189,10 +189,10 @@ function ArchiveComment({ archId }: { archId: string | undefined }) {
 
   const handleDeleteComment = (comment_id: number) => {
     const token = localStorage.getItem('token')
-    fetchData(`${BASEURL}/api/v1/archive/comment?comment_id=${comment_id}`, 'DELETE', { token })
+    fetchData(`${BASEURL}/v1/archive/comment?comment_id=${comment_id}`, 'DELETE', { token })
       .then(() => {
         message.success('操作成功')
-        return fetchData(`${BASEURL}/api/v1/archive/comment?archId=${archId}`, 'GET')
+        return fetchData(`${BASEURL}/v1/archive/comment?archId=${archId}`, 'GET')
       })
       .then((data: Array<commentsInterface>) => setComments(data))
       .catch((err) => console.log(err))

@@ -34,7 +34,7 @@ export default function PageEditer() {
   // 如果是编辑模式，向服务器获取编辑模式下对应的文章数据，查询参archId
   useEffect(() => {
     isEdit &&
-      fetchData(`${BASEURL}/api/v1/archive/getDetail/${archId}`, 'GET')
+      fetchData(`${BASEURL}/v1/archive/getDetail/${archId}`, 'GET')
         .then(({ content, title, coverImage, tags }: archiveInterface) => {
           setContent(content)
           setTitle(title)
@@ -49,7 +49,7 @@ export default function PageEditer() {
   // 新建模式提交函数，点击提交后，将数据收集给服务器
   const HandleSubmit = () => {
     const body = { title, content, cover_image: coverImage, time_for_read: 5, tags }
-    fetchData(`${BASEURL}/api/v1/archive/add`, 'POST', { token: localStorage.getItem('token') }, body)
+    fetchData(`${BASEURL}/v1/archive/add`, 'POST', { token: localStorage.getItem('token') }, body)
       .then(() => {
         message.success('操作成功')
         navigate('/')
@@ -62,12 +62,7 @@ export default function PageEditer() {
   // 修改模式提交函数，点击提交后，将数据收集给服务器
   const HandleUpdate = () => {
     const body = { title, content, cover_image: coverImage, time_for_read: 5, tags }
-    fetchData(
-      `${BASEURL}/api/v1/archive/update?archId=${archId}`,
-      'POST',
-      { token: localStorage.getItem('token') },
-      body
-    )
+    fetchData(`${BASEURL}/v1/archive/update?archId=${archId}`, 'POST', { token: localStorage.getItem('token') }, body)
       .then(() => {
         message.success('操作成功')
         navigate(`/archives/${archId}`)

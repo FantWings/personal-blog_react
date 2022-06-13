@@ -1,307 +1,163 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router'
-import styled from 'styled-components'
-import { Avatar } from 'antd'
-import { LoadingOutlined } from '@ant-design/icons'
+import { useState } from "react";
+import { useNavigate } from "react-router";
+import styled from "styled-components";
+import { Avatar, message } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
 
-import { ThemeColor } from '../utils/constent'
-import fetchData from '../utils/fetch'
-import { BASEURL } from '../config'
-import { userDataInterface } from '../utils/interfaces'
+import { ThemeColor } from "../utils/constent";
+import fetchData from "../utils/fetch";
+import { BASEURL } from "../config";
 
 export default function PageLogin() {
-  const [type, setType] = useState(0)
-  const [height, setHeight] = useState(351)
-  return (
-    <PageContainer>
-      <LoginContainer style={{ height: `${height}px` }}>
-        <TypeSwitcher>
-          <span
-            className={`switchButton ${type ? undefined : 'active'}`}
-            onClick={() => {
-              setType(0)
-              setHeight(351)
-            }}
-          >
-            登录
-          </span>
-          <span
-            className={`switchButton ${type ? 'active' : undefined}`}
-            onClick={() => {
-              setType(1)
-              setHeight(450)
-            }}
-          >
-            注册
-          </span>
-        </TypeSwitcher>
-        <>{type ? <RegisterFrom /> : <LoginForm />}</>
-      </LoginContainer>
-    </PageContainer>
-  )
-}
+  const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [avatar, setAvatar] = useState("");
+  const [nickname, setNickname] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [smsLogin, setSmsLogin] = useState(false);
+  const [smsCoolDownTime, setSmsCoolDownTime] = useState(60);
 
-function LoginForm() {
-  const navigate = useNavigate()
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [avatar, setAvatar] = useState('')
-  const [nickname, setNickname] = useState('')
-  const [loading, setLoading] = useState(false)
-
-  const HandleLogin = (e: any) => {
-    e.preventDefault()
-    setLoading(true)
-    fetchData(`${BASEURL}/api/v1/auth/login`, 'POST', undefined, {
+  const HandleLogin = () => {
+    if (!username || !password) {
+      return message.warn("用户名或密码不可为空");
+    }
+    setLoading(true);
+    fetchData(`${BASEURL}/v1/auth/login`, "POST", undefined, {
+      smsLogin,
       username,
       password,
     })
-      .then(({ token, expTime }) => {
+      .then(({ token, expTime }: { token: string; expTime: string }) => {
         // 登录成功，将token写入localStorge
-        localStorage.setItem('token', token)
+        localStorage.setItem("token", token);
         // 将过期时间写入localstorge
-        localStorage.setItem('expTime', expTime)
-        navigate(-1)
+        localStorage.setItem("expTime", expTime);
+        setLoading(false);
       })
-      .finally(() => {
-        setLoading(false)
-      })
+      .then(() => navigate(-1))
       .catch((e) => {
-        console.log(e)
-      })
-  }
+        console.log(e);
+      });
+  };
+
+  const HandleGetSms = () => {
+    if (!username) {
+      return message.error("手机号不可为空！");
+    }
+    if (!Number(username)) {
+      return message.error("手机号不可为非数字!");
+    }
+    if (username.length !== 11) {
+      return message.error("手机号不正确!");
+    }
+
+    fetchData(
+      `${BASEURL}/v1/auth/2fa/send_verify_code?phone_num=${username}`,
+      "GET"
+    ).then(() => {
+      message.info("验证码已送出");
+      const timer = setInterval(() => {
+        setSmsCoolDownTime((smsCoolDownTime) => {
+          if (smsCoolDownTime - 1 === 0) {
+            clearInterval(timer);
+            return 60;
+          }
+          return smsCoolDownTime - 1;
+        });
+      }, 1000);
+    });
+  };
 
   const HandleGetAvatar = () => {
     if (username) {
-      fetchData(`${BASEURL}/api/v1/user/avatar?username=${username}`, 'GET')
+      fetchData(`${BASEURL}/v1/user/avatar?username=${username}`, "GET")
         .then(({ avatar, nickname }) => {
-          setAvatar(avatar)
-          setNickname(nickname)
+          setAvatar(avatar);
+          setNickname(nickname);
         })
-        .catch(() => {})
+        .catch(() => {});
     } else {
-      setAvatar('')
+      setAvatar("");
     }
-  }
+  };
 
   return (
-    <CustomForm>
-      {nickname && username ? (
-        <div id="avatar">
-          <Avatar src={avatar} size={48} />
-          <span>{nickname}，欢迎回来！</span>
-        </div>
-      ) : (
-        <h2>使用账号密码登录</h2>
-      )}
-      <div className="fromContain">
-        <div className="form-block">
-          <div className="input-row">
-            <input
-              type="text"
-              name="username"
-              id="username"
-              value={username}
-              placeholder="邮箱"
-              onChange={(e) => setUsername(e.target.value)}
-              onBlur={() => HandleGetAvatar()}
-            />
+    <PageContainer>
+      <LoginContainer>
+        <CustomForm>
+          {nickname && username ? (
+            <div id="avatar">
+              <Avatar src={avatar} size={48} />
+              <span>{nickname}，欢迎回来！</span>
+            </div>
+          ) : (
+            <h2>{smsLogin ? "短信验证码登录" : "使用账号密码登录"}</h2>
+          )}
+          <div className="fromContain">
+            <div className="form-block">
+              <div className="input-row">
+                <input
+                  type="text"
+                  name="username"
+                  id="username"
+                  value={username}
+                  placeholder={smsLogin ? "手机号码" : "手机号 / 用户名"}
+                  onChange={(e) => setUsername(e.target.value)}
+                  onBlur={() => HandleGetAvatar()}
+                />
+                {smsLogin && (
+                  <span className="get_sms_code" onClick={() => HandleGetSms()}>
+                    {smsCoolDownTime === 60
+                      ? "获取验证码"
+                      : `${smsCoolDownTime} 秒后重新获取`}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="form-block">
+              <div className="input-row">
+                <input
+                  type={smsLogin ? "tel" : "password"}
+                  maxLength={smsLogin ? 6 : 32}
+                  name="password"
+                  id="login_password"
+                  placeholder={smsLogin ? "验证码" : "密码"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="tools">
+              <span onClick={() => setSmsLogin(!smsLogin)}>
+                {smsLogin ? "使用密码登录" : "使用短信验证码登录"}
+              </span>
+              <span>忘记密码了</span>
+            </div>
           </div>
-        </div>
-        <div className="form-block">
-          <div className="input-row">
-            <input
-              type="password"
-              name="password"
-              id="login_password"
-              placeholder="密码"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+          <div className="flex warp flex-row bottom-group">
+            {!smsLogin && (
+              <div
+                onClick={(e) => {
+                  setSmsLogin(true);
+                  message.info("将使用短信验证码注册账号");
+                }}
+                className="button extend"
+              >
+                <span>注册</span>
+              </div>
+            )}
+            <div onClick={() => HandleLogin()} className="button extend">
+              {loading && <LoadingOutlined />}
+              <span id="loginText">
+                {loading ? "请稍等" : smsLogin ? "登录 / 注册" : "登录"}
+              </span>
+            </div>
           </div>
-        </div>
-        <div className="tools">
-          <span>忘记密码了？</span>
-        </div>
-      </div>
-      <button onClick={(e) => HandleLogin(e)}>
-        {loading && <LoadingOutlined />}
-        <span id="loginText">{loading ? '请稍等' : '登录'}</span>
-      </button>
-    </CustomForm>
-  )
-}
-
-function RegisterFrom() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [verifyPassword, setVerifyPassword] = useState('')
-  const [nickname, setNickName] = useState('')
-  const [helloText, setHelloText] = useState('让我们开始吧！')
-  const [describeText, setDescribeText] = useState('设置一个用户名')
-  const [showDescribe, setShowDescribe] = useState(false)
-  const [checkPass, setCheckPass] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [buttomText, setButtomText] = useState('创建账号')
-  const navigate = useNavigate()
-
-  const HandleRegister = (e: any) => {
-    e.preventDefault()
-    setLoading(true)
-    setButtomText('正在请求')
-    // 执行注册操作
-    fetchData(`${BASEURL}/api/v1/auth/register`, 'POST', undefined, {
-      nickname,
-      email,
-      password,
-    })
-      .then(({ token }) => {
-        // 注册成功，将token写入localStorge
-        localStorage.setItem('token', token)
-        // 注册成功，获取用户信息
-        return fetchData(`${BASEURL}/api/v1/user/userInfo`, 'GET', { token })
-      })
-      .then((userInfoData: userDataInterface) => localStorage.setItem('userInfo', JSON.stringify(userInfoData)))
-      .then(() => navigate('/'))
-      .finally(() => {
-        setLoading(false)
-      })
-      .catch((e) => {
-        setButtomText('再试一次')
-      })
-  }
-
-  // const HandleVerifyCode = (e: any) => {
-  //   e.preventDefault()
-  //   setLoading(true)
-  //   fetchData(
-  //     `${BASEURL}/api/v1/auth/2fa/bound?method=email`,
-  //     'POST',
-  //     { token: localStorage.getItem('token') },
-  //     {
-  //       verifyCode,
-  //     }
-  //   )
-  // }
-
-  const formCheck = () => {
-    if (!nickname.length) {
-      setHelloText('至少需要告知您的昵称哦')
-      setShowDescribe(false)
-      return setCheckPass(false)
-    }
-
-    setHelloText(`${nickname}，你好呀！`)
-    setShowDescribe(true)
-
-    if (!email) return setDescribeText('设置一个用于登录的邮箱')
-    if (!email.includes('@') || !email.includes('.')) {
-      setDescribeText('哎呀，邮箱格式不对！再检查一下！')
-      return setCheckPass(false)
-    }
-
-    if (!password) return setDescribeText('接下来设置一个高强度密码吧！')
-    if (password.length < 8) {
-      setDescribeText('密码长度不可低于8位！')
-      return setCheckPass(false)
-    }
-    if (password !== verifyPassword) {
-      setDescribeText('哎呀，两次密码不对哦！')
-      return setCheckPass(false)
-    }
-
-    setDescribeText('非常好！您现在可以点击“创建账号”了！')
-    setCheckPass(true)
-  }
-
-  // const verifyEmailFrom = () => {
-  //   return (
-  //     <div className="form-block">
-  //       <div className="input-row">
-  //         <input
-  //           type="number"
-  //           name="verifyCode"
-  //           id="verifyCode"
-  //           value={verifyCode}
-  //           maxLength={6}
-  //           placeholder="验证码"
-  //           onChange={(e) => setVerifyCode(e.target.value)}
-  //         />
-  //       </div>
-  //     </div>
-  //   )
-  // }
-
-  return (
-    <CustomForm>
-      <h2>{helloText}</h2>
-      <span id="describe" style={{ opacity: showDescribe ? 1 : 0, height: showDescribe ? '1rem' : '0rem' }}>
-        {describeText}
-      </span>
-      <div className="fromContain">
-        <div className="form-block">
-          <div className="input-row">
-            <input
-              type="text"
-              name="nickname"
-              id="nickname"
-              value={nickname}
-              placeholder="昵称（支持中文）"
-              maxLength={16}
-              onChange={(e) => setNickName(e.target.value)}
-              onBlur={() => formCheck()}
-              onKeyUp={() => setNickName(nickname.replace(/[^a-zA-Z0-9\u4E00-\u9FA5]/g, ''))}
-              onPaste={() => setNickName(nickname.replace(/[^a-zA-Z0-9\u4E00-\u9FA5]/g, ''))}
-              onContextMenu={() => setNickName(nickname.replace(/[^a-zA-Z0-9\u4E00-\u9FA5]/g, ''))}
-            />
-          </div>
-        </div>
-        <div className="form-block">
-          <div className="input-row">
-            <input
-              type="text"
-              name="email"
-              id="email"
-              value={email}
-              placeholder="登录邮箱"
-              onChange={(e) => setEmail(e.target.value)}
-              onBlur={() => formCheck()}
-            />
-          </div>
-        </div>
-        <div className="form-block">
-          <div className="input-row">
-            <input
-              type="password"
-              name="password"
-              id="register_password"
-              placeholder="密码"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-        </div>
-        <div className="form-block">
-          <div className="input-row">
-            <input
-              type="password"
-              name="confirmPassword"
-              id="confirmPassword"
-              placeholder="确认密码"
-              value={verifyPassword}
-              onFocus={() => setDescribeText('请再输入一次您的密码以确认无误！')}
-              onChange={(e) => setVerifyPassword(e.target.value)}
-              onBlur={() => formCheck()}
-            />
-          </div>
-        </div>
-      </div>
-      <button onClick={(e) => HandleRegister(e)} className={checkPass ? 'checkPass' : 'checkUnPass'}>
-        {loading && <LoadingOutlined />}
-        <span>{buttomText}</span>
-      </button>
-    </CustomForm>
-  )
+        </CustomForm>
+      </LoginContainer>
+    </PageContainer>
+  );
 }
 
 const PageContainer = styled.div`
@@ -312,7 +168,7 @@ const PageContainer = styled.div`
     align-items: center;
   }
   height: 100%;
-`
+`;
 const LoginContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -329,33 +185,33 @@ const LoginContainer = styled.div`
     flex: 1;
     height: 100% !important;
   }
-`
-const TypeSwitcher = styled.div`
-  display: flex;
-  flex: 1;
-  justify-content: space-between;
-  align-items: center;
-  max-height: 45px;
-  .switchButton {
-    display: flex;
-    flex: 1;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    font-size: 1.25em;
-    transition: all 0.3s;
-    overflow: hidden;
-    box-sizing: border-box;
-    border-bottom: 2px solid #f9f9f9;
-    :hover {
-      cursor: pointer;
-      background-color: #fcfcfc;
-    }
-  }
-  .active {
-    border-bottom: 2px solid ${ThemeColor.dark};
-  }
-`
+`;
+// const TypeSwitcher = styled.div`
+//   display: flex;
+//   flex: 1;
+//   justify-content: space-between;
+//   align-items: center;
+//   max-height: 45px;
+//   .switchButton {
+//     display: flex;
+//     flex: 1;
+//     justify-content: center;
+//     align-items: center;
+//     height: 100%;
+//     font-size: 1.25em;
+//     transition: all 0.3s;
+//     overflow: hidden;
+//     box-sizing: border-box;
+//     border-bottom: 2px solid #f9f9f9;
+//     :hover {
+//       cursor: pointer;
+//       background-color: #fcfcfc;
+//     }
+//   }
+//   .active {
+//     border-bottom: 2px solid ${ThemeColor.dark};
+//   }
+// `;
 
 const CustomForm = styled.form`
   display: flex;
@@ -368,6 +224,29 @@ const CustomForm = styled.form`
     font-weight: 400;
     text-align: center;
     margin: 0;
+  }
+
+  .flex {
+    display: flex;
+  }
+
+  .nowarp {
+    flex-wrap: nowrap;
+  }
+
+  .extend {
+    flex: 1 100%;
+  }
+
+  .flex-row {
+    flex-direction: row;
+  }
+
+  .bottom-group {
+    justify-content: space-between;
+    div.button {
+      margin: 0 0.25rem;
+    }
   }
 
   #avatar {
@@ -390,16 +269,18 @@ const CustomForm = styled.form`
   div.fromContain {
     display: flex;
     flex-direction: column;
-    margin-bottom: 1.75em;
+    margin-bottom: 0.75em;
     div.form-block {
       span {
         font-size: 1.1em;
       }
       div.input-row {
+        display: flex;
         padding: 0.5em;
         border-bottom: 1px solid ${ThemeColor.white};
         margin: 0.5em 0;
         input {
+          flex: 1;
           border: none;
           width: 100%;
           box-sizing: border-box;
@@ -407,22 +288,40 @@ const CustomForm = styled.form`
           color: #333;
           outline: none;
         }
+        span.get_sms_code {
+          justify-content: center;
+          background-color: #f0f0f0;
+          color: #6d6d6d;
+          border: none;
+          padding: 0.25em 0.5rem;
+          align-items: center;
+          border-radius: 2px;
+          transition: 300ms;
+          font-size: 12px;
+          &:hover {
+            background-color: #e2e2e2;
+            cursor: pointer;
+          }
+        }
       }
     }
     div.tools {
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
       transition: all 0.3s;
       color: #848484;
-      margin-top: 0.25em;
-      :hover {
-        cursor: pointer;
-        color: #333;
+      margin: 0.5rem 0.25rem;
+      span {
+        transition: inherit;
+        &:hover {
+          cursor: pointer;
+          color: #333;
+        }
       }
     }
   }
 
-  button {
+  div.button {
     display: flex;
     justify-content: center;
     background-color: #333;
@@ -451,4 +350,4 @@ const CustomForm = styled.form`
       background-color: #9c9c9c;
     }
   }
-`
+`;

@@ -22,7 +22,7 @@ export default function PageHome() {
   // 首屏获取数据
   useEffect(() => {
     setLoading(true)
-    fetchData(`${BASEURL}/api/v1/archive/getList`, 'GET')
+    fetchData(`${BASEURL}/v1/archive/getList`, 'GET')
       .then((data) => setData(data))
       .finally(() => setLoading(false))
       .catch(({ msg }) => console.log(`博文列表获取失败：${msg}`))
@@ -31,7 +31,7 @@ export default function PageHome() {
 
   // const loadMore = () => {
   //   setLoading(true)
-  //   fetchData(`${BASEURL}/api/v1/archive/getList?limit=${data.length + 10}`, 'GET')
+  //   fetchData(`${BASEURL}/v1/archive/getList?limit=${data.length + 10}`, 'GET')
   //     .then((data) => setData(data))
   //     .finally(() => setLoading(false))
   //     .catch(({ msg }) => console.log(`博文列表获取失败：${msg}`))
@@ -39,7 +39,7 @@ export default function PageHome() {
 
   // const filterByTags = (tags: string) => {
   //   setLoading(true)
-  //   fetchData(`${BASEURL}/api/v1/archive/getList?filter_by=${tags}`, 'GET')
+  //   fetchData(`${BASEURL}/v1/archive/getList?filter_by=${tags}`, 'GET')
   //     .then((data) => setData(data))
   //     .finally(() => setLoading(false))
   //     .catch(({ msg }) => console.log(msg))
