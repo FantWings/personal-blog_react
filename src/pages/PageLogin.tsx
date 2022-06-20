@@ -111,7 +111,7 @@ export default function PageLogin() {
                     className="get_sms_code"
                     onClick={() => HandleGetSms()}
                     style={{
-                      pointerEvents: smsCoolDownTime ? "none" : "unset",
+                      pointerEvents: smsCoolDownTime === 60 ? "auto":"none",
                     }}
                   >
                     {smsCoolDownTime === 60
