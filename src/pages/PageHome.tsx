@@ -128,17 +128,22 @@ function UnifyContaner(props: any) {
 }
 
 const Body = styled.div`
-  margin: 0 auto;
+  margin: 0 10px;
   display: flex;
   flex: 1;
   justify-content: space-between;
-  width: 75%;
-  min-width: 760px;
+  /* width: 75%;
+  min-width: 760px; */
   div.main-left {
-    width: calc(100% - 310px);
+    @media screen and (min-width:768px) {
+      width: calc(100% - 310px);
+    }
   }
   div.main-right {
     width: 300px;
+    @media screen and (max-width: 768px){
+      display: none;
+    }
   }
 `
 
@@ -251,6 +256,9 @@ const Posts = styled.div`
     display: flex;
     justify-content: space-between;
     color: #a4a4a4;
+    @media screen and (max-width:768px){
+      flex-wrap: wrap;
+    }
     div.data-set {
       span {
         margin-right: 12px;
