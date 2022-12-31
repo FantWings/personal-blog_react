@@ -305,7 +305,7 @@ const markdownComponents = {
 
 const LeftView = styled.div`
   flex: 1;
-  max-width: 70%;
+  max-width: 95%;
   margin: 0 auto;
 `
 
